@@ -47,11 +47,10 @@ function M.promote(node)
 end
 
 function M.insert_head(node)
-  local parent_node = node:parent()
-  local first_child = parent_node:child(0)
+  local first_child = node:child(0)
 
   if first_child:named() then
-    local row, col = parent_node:start()
+    local row, col = node:start()
     vim.api.nvim_win_set_cursor(0, { row + 1, col })
     vim.cmd.startinsert()
   else
@@ -62,11 +61,10 @@ function M.insert_head(node)
 end
 
 function M.insert_tail(node)
-  local parent_node = node:parent()
-  local last_child = parent_node:child(parent_node:child_count() - 1)
+  local last_child = node:child(node:child_count() - 1)
 
   if last_child:named() then
-    local row, col = parent_node:end_()
+    local row, col = node:end_()
     vim.api.nvim_win_set_cursor(0, { row + 1, col })
     vim.cmd.startinsert()
   else
@@ -91,7 +89,7 @@ function M.splice(node)
 end
 
 function M.slurp_left(node)
-  local start_range = {utils.get_unnamed_start_range(node)}
+  local start_range = { utils.get_unnamed_start_range(node) }
 
   local target_node = node
   for _ = 1, vim.v.count1 do
@@ -111,7 +109,7 @@ function M.slurp_left(node)
 end
 
 function M.slurp_right(node)
-  local end_range = {utils.get_unnamed_end_range(node)}
+  local end_range = { utils.get_unnamed_end_range(node) }
 
   local target_node = node
   for _ = 1, vim.v.count1 do
@@ -131,7 +129,7 @@ function M.slurp_right(node)
 end
 
 function M.barf_left(node)
-  local start_range = {utils.get_unnamed_start_range(node)}
+  local start_range = { utils.get_unnamed_start_range(node) }
 
   local target_node = node:named_child(0)
   if target_node == nil then
@@ -156,7 +154,7 @@ function M.barf_left(node)
 end
 
 function M.barf_right(node)
-  local end_range = {utils.get_unnamed_end_range(node)}
+  local end_range = { utils.get_unnamed_end_range(node) }
 
   local target_node = node:named_child(node:named_child_count() - 1)
   if target_node == nil then
