@@ -3,23 +3,23 @@ local utils = require "treesitter-sexp.utils"
 
 local M = {}
 
-local function some_fn(s)
+local function operate(s)
   vim.go.operatorfunc = "v:lua.require'treesitter-sexp.operators'." .. s
   return "g@l"
 end
 
 function M.set()
   vim.keymap.set("n", "<e", function()
-    return some_fn "swap_prev_elem"
+    return operate "swap_prev_elem"
   end, { expr = true })
   vim.keymap.set("n", ">e", function()
-    return some_fn "swap_next_elem"
+    return operate "swap_next_elem"
   end, { expr = true })
   vim.keymap.set("n", "<f", function()
-    return some_fn "swap_prev_form"
+    return operate "swap_prev_form"
   end, { expr = true })
   vim.keymap.set("n", ">f", function()
-    return some_fn "swap_next_form"
+    return operate "swap_next_form"
   end, { expr = true })
 
   vim.keymap.set("n", "<I", function()
@@ -30,27 +30,31 @@ function M.set()
   end)
 
   vim.keymap.set("n", "<LocalLeader>o", function()
-    return some_fn "promote_form"
+    return operate "promote_form"
   end, { expr = true })
   vim.keymap.set("n", "<LocalLeader>O", function()
-    return some_fn "promote_elem"
+    return operate "promote_elem"
   end, { expr = true })
   vim.keymap.set("n", "<LocalLeader>@", function()
-    return some_fn "splice"
+    return operate "splice"
   end, { expr = true })
 
   vim.keymap.set("n", "<(", function()
-    return some_fn "slurp_left"
+    return operate "slurp_left"
   end, { expr = true })
   vim.keymap.set("n", ">)", function()
-    return some_fn "slurp_right"
+    return operate "slurp_right"
   end, { expr = true })
   vim.keymap.set("n", ">(", function()
-    return some_fn "barf_left"
+    return operate "barf_left"
   end, { expr = true })
   vim.keymap.set("n", "<)", function()
-    return some_fn "barf_right"
+    return operate "barf_right"
   end, { expr = true })
+
+  -- Text objects
+  vim.keymap.set({ "o", "x" }, "ie", ":<C-U> lua require'treesitter-sexp.operators'.select_elem()<CR>")
+  vim.keymap.set({ "o", "x" }, "if", ":<C-U> lua require'treesitter-sexp.operators'.select_form()<CR>")
 end
 
 return M
