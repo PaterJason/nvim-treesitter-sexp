@@ -46,34 +46,6 @@ function M.promote(node)
   vim.api.nvim_win_set_cursor(0, { start_row + 1, start_col })
 end
 
-function M.insert_head(node)
-  local first_child = node:child(0)
-
-  if first_child:named() then
-    local row, col = node:start()
-    vim.api.nvim_win_set_cursor(0, { row + 1, col })
-    vim.cmd.startinsert()
-  else
-    local row, col = first_child:next_named_sibling():prev_sibling():end_()
-    vim.api.nvim_win_set_cursor(0, { row + 1, col })
-    vim.cmd.startinsert()
-  end
-end
-
-function M.insert_tail(node)
-  local last_child = node:child(node:child_count() - 1)
-
-  if last_child:named() then
-    local row, col = node:end_()
-    vim.api.nvim_win_set_cursor(0, { row + 1, col })
-    vim.cmd.startinsert()
-  else
-    local row, col = last_child:prev_named_sibling():next_sibling():start()
-    vim.api.nvim_win_set_cursor(0, { row + 1, col })
-    vim.cmd.startinsert()
-  end
-end
-
 function M.splice(node)
   local ranges = {}
   for child_node, _ in node:iter_children() do

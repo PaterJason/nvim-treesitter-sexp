@@ -47,22 +47,4 @@ function M.barf_right()
   actions.barf_right(utils.get_elem_node())
 end
 
-function M.select_elem()
-  local node = utils.get_elem_node()
-  local range = { node:range() }
-
-  vim.fn.setpos("'<", { 0, range[1] + 1, range[2] + 1, 0 })
-  vim.fn.setpos("'>", { 0, range[3] + 1, range[4], 0 })
-  vim.cmd "normal! gv"
-end
-
-function M.select_form()
-  local node = utils.get_form_node()
-  local range = { node:range() }
-
-  vim.fn.setpos("'<", { 0, range[1] + 1, range[2] + 1, 0 })
-  vim.fn.setpos("'>", { 0, range[3] + 1, range[4], 0 })
-  vim.cmd "normal! gv"
-end
-
 return M

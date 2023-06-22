@@ -1,5 +1,24 @@
-local actions = require "treesitter-sexp.actions"
-local utils = require "treesitter-sexp.utils"
+local config = require "treesitter-sexp.config"
+
+local descriptions = {
+  swap_prev_elem = "Swap previous element",
+  swap_next_elem = "Swap next element",
+  swap_prev_form = "Swap previous form",
+  swap_next_form = "Swap next form",
+  promote_form = "Promote form",
+  promote_elem = "Promote element",
+  splice = "Splice element",
+
+  slurp_left = "Slurp left",
+  slurp_right = "Slurp right",
+  barf_left = "Barf left",
+  barf_right = "Barf right",
+
+  a_elem = "An element",
+  a_form = "A form",
+  i_elem = "Inner element",
+  i_form = "Inner form",
+}
 
 local M = {}
 
@@ -9,52 +28,47 @@ local function operate(s)
 end
 
 function M.set()
-  vim.keymap.set("n", "<e", function()
-    return operate "swap_prev_elem"
-  end, { expr = true })
-  vim.keymap.set("n", ">e", function()
-    return operate "swap_next_elem"
-  end, { expr = true })
-  vim.keymap.set("n", "<f", function()
-    return operate "swap_prev_form"
-  end, { expr = true })
-  vim.keymap.set("n", ">f", function()
-    return operate "swap_next_form"
-  end, { expr = true })
-
-  vim.keymap.set("n", "<I", function()
-    actions.insert_head(utils.get_elem_node())
-  end)
-  vim.keymap.set("n", ">I", function()
-    actions.insert_tail(utils.get_elem_node())
-  end)
-
-  vim.keymap.set("n", "<LocalLeader>o", function()
-    return operate "promote_form"
-  end, { expr = true })
-  vim.keymap.set("n", "<LocalLeader>O", function()
-    return operate "promote_elem"
-  end, { expr = true })
-  vim.keymap.set("n", "<LocalLeader>@", function()
-    return operate "splice"
-  end, { expr = true })
-
-  vim.keymap.set("n", "<(", function()
-    return operate "slurp_left"
-  end, { expr = true })
-  vim.keymap.set("n", ">)", function()
-    return operate "slurp_right"
-  end, { expr = true })
-  vim.keymap.set("n", ">(", function()
-    return operate "barf_left"
-  end, { expr = true })
-  vim.keymap.set("n", "<)", function()
-    return operate "barf_right"
-  end, { expr = true })
+  -- Overators
+  for op, lhs in pairs(config.keymaps) do
+    vim.keymap.set("n", lhs, function()
+      return operate(op)
+    end, {
+      expr = true,
+      desc = descriptions[op],
+    })
+  end
 
   -- Text objects
-  vim.keymap.set({ "o", "x" }, "ie", ":<C-U> lua require'treesitter-sexp.operators'.select_elem()<CR>")
-  vim.keymap.set({ "o", "x" }, "if", ":<C-U> lua require'treesitter-sexp.operators'.select_form()<CR>")
+  if config.textobjects.elem then
+    local char = config.textobjects.elem
+    vim.keymap.set(
+      { "o", "x" },
+      "a" .. char,
+      ":<C-U> lua require'treesitter-sexp.textobjects'.a_elem()<CR>",
+      { desc = descriptions.a_elem }
+    )
+    vim.keymap.set(
+      { "o", "x" },
+      "i" .. char,
+      ":<C-U> lua require'treesitter-sexp.textobjects'.i_elem()<CR>",
+      { desc = descriptions.i_elem }
+    )
+  end
+  if config.textobjects.form then
+    local char = config.textobjects.form
+    vim.keymap.set(
+      { "o", "x" },
+      "a" .. char,
+      ":<C-U> lua require'treesitter-sexp.textobjects'.a_form()<CR>",
+      { desc = descriptions.a_form }
+    )
+    vim.keymap.set(
+      { "o", "x" },
+      "i" .. char,
+      ":<C-U> lua require'treesitter-sexp.textobjects'.i_form()<CR>",
+      { desc = descriptions.i_form }
+    )
+  end
 end
 
 return M
