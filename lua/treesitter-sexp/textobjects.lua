@@ -5,10 +5,9 @@ local M = {}
 function M.a_elem()
   local node = utils.get_elem_node()
   if node ~= nil then
-    local range = { node:range() }
-
-    vim.fn.setpos("'<", { 0, range[1] + 1, range[2] + 1, 0 })
-    vim.fn.setpos("'>", { 0, range[3] + 1, range[4], 0 })
+    local start_row, start_col, end_row, end_col = node:range()
+    vim.fn.setpos("'<", { 0, start_row + 1, start_col + 1, 0 })
+    vim.fn.setpos("'>", { 0, end_row + 1, end_col, 0 })
   end
   vim.cmd "normal! gv"
 end
@@ -28,10 +27,9 @@ end
 function M.a_form()
   local node = utils.get_form_node()
   if node ~= nil then
-    local range = { node:range() }
-
-    vim.fn.setpos("'<", { 0, range[1] + 1, range[2] + 1, 0 })
-    vim.fn.setpos("'>", { 0, range[3] + 1, range[4], 0 })
+    local start_row, start_col, end_row, end_col = node:range()
+    vim.fn.setpos("'<", { 0, start_row + 1, start_col + 1, 0 })
+    vim.fn.setpos("'>", { 0, end_row + 1, end_col, 0 })
   end
   vim.cmd "normal! gv"
 end

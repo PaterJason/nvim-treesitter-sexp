@@ -52,6 +52,11 @@ function M.get_form_node()
 end
 
 function M.get_unnamed_start_range(node)
+  if node:child_count() == 0 then
+    local start_range = { node:range() }
+    return start_range[1], start_range[2], start_range[1], start_range[2]
+  end
+
   local start_node = node:child(0)
   local start_range = { start_node:range() }
   if start_node:named() then
@@ -69,6 +74,11 @@ function M.get_unnamed_start_range(node)
 end
 
 function M.get_unnamed_end_range(node)
+  if node:child_count() == 0 then
+    local _, _, end_row, end_col = node:range()
+    return end_row, end_col, end_row, end_col
+  end
+
   local end_node = node:child(node:child_count() - 1)
   local end_range = { end_node:range() }
   if end_node:named() then
