@@ -23,6 +23,7 @@ local default_config = {
   textobjects = {
     elem = "e",
     form = "f",
+    top_level = "F",
   },
 }
 

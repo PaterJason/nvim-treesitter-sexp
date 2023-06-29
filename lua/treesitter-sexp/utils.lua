@@ -51,6 +51,21 @@ function M.get_form_node()
   end
 end
 
+--- @type TSSexpGetNode
+function M.get_top_level_node()
+  local node = M.get_elem_node()
+  if node == nil then
+    return
+  end
+  local parser = vim.treesitter.get_parser()
+  local root = parser:parse()[1]:root()
+  for child_node, _ in root:iter_children() do
+    if child_node:named() and vim.treesitter.is_ancestor(child_node, node) then
+      return child_node
+    end
+  end
+end
+
 --- @alias TSSexpGetRange fun(node: TSNode): integer, integer, integer, integer
 
 --- @type TSSexpGetRange
@@ -71,7 +86,7 @@ function M.get_unnamed_start_range(node)
   repeat
     _, _, end_row, end_col = end_node:range()
     end_node = end_node:next_sibling()
-  until end_node:named()
+  until end_node == nil or end_node:named()
 
   return start_row, start_col, end_row, end_col
 end
@@ -94,7 +109,7 @@ function M.get_unnamed_end_range(node)
   repeat
     start_row, start_col, _, _ = start_node:range()
     start_node = start_node:prev_sibling()
-  until start_node:named()
+  until start_node == nil or start_node:named()
 
   return start_row, start_col, end_row, end_col
 end

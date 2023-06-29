@@ -9,8 +9,8 @@ function M.set()
     local operator = operators[key]
     if lhs and operator then
       vim.keymap.set("n", lhs, function()
-          vim.go.operatorfunc = "v:lua.require'treesitter-sexp.operators'." .. key .. ".func"
-          return "g@l"
+        vim.go.operatorfunc = "v:lua.require'treesitter-sexp.operators'." .. key .. ".func"
+        return "g@l"
       end, {
         expr = true,
         desc = operator.desc,
