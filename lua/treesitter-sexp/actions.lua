@@ -7,6 +7,7 @@ local ts_utils = require "nvim-treesitter.ts_utils"
 local M = {}
 
 function M.swap_next(node)
+  node = utils.get_range_max_node(node)
   local next_node = node
   for _ = 1, vim.v.count1 do
     next_node = next_node:next_named_sibling()
@@ -20,6 +21,7 @@ function M.swap_next(node)
 end
 
 function M.swap_prev(node)
+  node = utils.get_range_max_node(node)
   local prev_node = node
   for _ = 1, vim.v.count1 do
     prev_node = prev_node:prev_named_sibling()
@@ -35,11 +37,12 @@ end
 function M.promote(node)
   local parent_node = node
   for _ = 1, vim.v.count1 do
-    parent_node = parent_node:parent()
-    if parent_node == nil then
+    local next_parent_node = utils.get_larger_parent(parent_node)
+    if next_parent_node == nil then
       vim.notify "No parent node"
       return
     end
+    parent_node = next_parent_node
   end
 
   local text = vim.treesitter.get_node_text(node, 0)
@@ -66,7 +69,7 @@ end
 function M.slurp_left(node)
   local start_range = { utils.get_unnamed_start_range(node) }
 
-  local target_node = node
+  local target_node = utils.get_range_max_node(node)
   for _ = 1, vim.v.count1 do
     target_node = target_node:prev_named_sibling()
     if target_node == nil then
@@ -86,7 +89,7 @@ end
 function M.slurp_right(node)
   local end_range = { utils.get_unnamed_end_range(node) }
 
-  local target_node = node
+  local target_node = utils.get_range_max_node(node)
   for _ = 1, vim.v.count1 do
     target_node = target_node:next_named_sibling()
     if target_node == nil then
@@ -118,7 +121,7 @@ function M.barf_left(node)
       return
     end
   end
-  target_node = target_node:next_sibling()
+  target_node = target_node:next_named_sibling() or target_node:next_sibling()
 
   local target_range = { target_node:range() }
   local text = vim.api.nvim_buf_get_text(0, start_range[1], start_range[2], start_range[3], start_range[4], {})
@@ -143,7 +146,7 @@ function M.barf_right(node)
       return
     end
   end
-  target_node = target_node:prev_sibling()
+  target_node = target_node:prev_named_sibling() or target_node:prev_sibling()
 
   local target_range = { target_node:range() }
   local text = vim.api.nvim_buf_get_text(0, end_range[1], end_range[2], end_range[3], end_range[4], {})
