@@ -9,7 +9,7 @@ function M.set()
     local operator = operators[key]
     if lhs and operator then
       vim.keymap.set("n", lhs, function()
-        vim.go.operatorfunc = "v:lua.require'treesitter-sexp.operators'." .. key .. ".func"
+        vim.go.operatorfunc = "v:lua.require'treesitter-sexp.operators'." .. key
         return "g@l"
       end, {
         expr = true,
@@ -27,7 +27,7 @@ function M.set()
         vim.keymap.set(
           { "o", "x" },
           ai .. char,
-          ":<C-U> lua require'treesitter-sexp.textobjects'." .. key .. "." .. ai .. ".textobj()<CR>",
+          ":<C-U> lua require'treesitter-sexp.textobjects'." .. key .. "." .. ai .. "()<CR>",
           { desc = textobjects[key][ai].desc, silent = true }
         )
       end

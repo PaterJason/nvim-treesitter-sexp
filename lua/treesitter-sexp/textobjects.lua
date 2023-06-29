@@ -65,7 +65,9 @@ for _, textobject in ipairs(textobjects) do
   end
   M[textobject.name][textobject.ai] = {
     desc = textobject.desc,
-    textobj = function()
+  }
+  setmetatable(M[textobject.name][textobject.ai], {
+    __call = function()
       local node = textobject.get_node()
       if node == nil then
         vim.notify "Node not found"
@@ -81,6 +83,6 @@ for _, textobject in ipairs(textobjects) do
       end
       vim.cmd "normal! gv"
     end,
-  }
+  })
 end
 return M

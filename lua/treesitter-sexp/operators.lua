@@ -88,7 +88,9 @@ local M = {}
 for _, operator in ipairs(operators) do
   M[operator.name] = {
     desc = operator.desc,
-    func = function()
+  }
+  setmetatable(M[operator.name], {
+    __call = function()
       local node = operator.get_node()
       if node == nil then
         vim.notify "Node not found"
@@ -96,7 +98,7 @@ for _, operator in ipairs(operators) do
       end
       operator.action(node)
     end,
-  }
+  })
 end
 
 return M
