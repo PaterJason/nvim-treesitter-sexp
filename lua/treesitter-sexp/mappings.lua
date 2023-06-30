@@ -24,12 +24,9 @@ function M.set()
     local textobject = textobjects[key]
     if char and textobject then
       for _, ai in ipairs { "a", "i" } do
-        vim.keymap.set(
-          { "o", "x" },
-          ai .. char,
-          ":<C-U> lua require'treesitter-sexp.textobjects'." .. key .. "." .. ai .. "()<CR>",
-          { desc = textobjects[key][ai].desc, silent = true }
-        )
+        vim.keymap.set({ "o", "x" }, ai .. char, function()
+          require("treesitter-sexp.textobjects")[key][ai]()
+        end, { desc = textobjects[key][ai].desc, silent = true })
       end
     end
   end

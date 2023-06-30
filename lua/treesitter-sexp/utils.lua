@@ -36,7 +36,10 @@ end
 
 --- @type TSSexpGetNode
 function M.get_elem_node()
-  local node = vim.treesitter.get_node()
+  local start = vim.fn.getpos "v"
+  local end_ = vim.fn.getpos "."
+  local parser = vim.treesitter.get_parser()
+  local node = parser:named_node_for_range { start[2] - 1, start[3] - 1, end_[2] - 1, end_[3] - 1 }
   if node ~= nil then
     return M.get_valid_node(node)
   end

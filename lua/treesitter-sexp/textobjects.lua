@@ -80,8 +80,8 @@ for _, textobject in ipairs(textobjects) do
         end
         vim.api.nvim_buf_set_mark(0, "<", start_row + 1, start_col, {})
         vim.api.nvim_buf_set_mark(0, ">", end_row + 1, end_col - 1, {})
+        vim.cmd "normal! gv"
       end
-      vim.cmd "normal! gv"
     end,
   })
 end
