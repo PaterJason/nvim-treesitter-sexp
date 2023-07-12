@@ -46,7 +46,7 @@ function M.promote(node)
   end
 
   local text = vim.treesitter.get_node_text(node, 0)
-  local start_row, start_col, end_row, end_col = parent_node:range()
+  local start_row, start_col, end_row, end_col = utils.get_a_range(parent_node)
 
   vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, vim.split(text, "\n"))
   vim.api.nvim_win_set_cursor(0, { start_row + 1, start_col })
