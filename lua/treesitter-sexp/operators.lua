@@ -19,7 +19,7 @@ local utils = require "treesitter-sexp.utils"
 --- @field actions TSSexpAction
 --- @field get_node TSSexpGetNode
 
-M = {
+local M = {
   swap_prev_elem = {
     desc = "Swap previous element",
     action = actions.swap_prev,

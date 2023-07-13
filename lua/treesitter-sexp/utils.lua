@@ -119,10 +119,10 @@ end
 --- @type TSSexpGetRange
 function M.get_a_range(node)
   local start_row, start_col, end_row, end_col = node:range()
-  local last_line = vim.fn.line("$")
+  local last_line = vim.fn.line "$"
   if end_row >= last_line then
     end_row = last_line - 1
-    end_col = vim.fn.col({last_line, "$"}) - 1
+    end_col = vim.fn.col { last_line, "$" } - 1
   end
   return start_row, start_col, end_row, end_col
 end
