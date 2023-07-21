@@ -1,4 +1,4 @@
-local M = {}
+local ts_sexp = {}
 
 local function set_config(opts)
   local config = require "treesitter-sexp.config"
@@ -9,10 +9,11 @@ local function set_config(opts)
   end
 end
 
---- @param opts? TSSexpConfig
-function M.setup(opts)
+--- Setup function to be run by user. Configures the defaults
+---@param opts table|nil Configuration options
+function ts_sexp.setup(opts)
   set_config(opts)
   require("treesitter-sexp.mappings").set()
 end
 
-return M
+return ts_sexp

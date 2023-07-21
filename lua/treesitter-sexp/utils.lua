@@ -2,20 +2,20 @@ local config = require "treesitter-sexp.config"
 
 local M = {}
 
---- @type fun(node: TSNode): TSNode
+---@type fun(node: TSNode): TSNode
 function M.get_valid_node(node)
   local parent = node:parent()
 
   local lang = vim.treesitter.language.get_lang(vim.bo.filetype)
-  local ignored_types = config.ignored_node_types[lang] or {}
-  while parent ~= nil and vim.tbl_contains(ignored_types, node:type()) do
+  local take_parent_node_types = config.take_parent_node_types[lang] or {}
+  while parent ~= nil and vim.tbl_contains(take_parent_node_types, parent:type()) do
     node = parent
     parent = parent:parent()
   end
   return node
 end
 
---- @type fun(node: TSNode): TSNode
+---@type fun(node: TSNode): TSNode
 function M.get_range_max_node(node)
   local parent = node:parent()
 
@@ -27,14 +27,14 @@ function M.get_range_max_node(node)
   return node
 end
 
---- @type fun(node: TSNode): TSNode|nil
+---@type fun(node: TSNode): TSNode|nil
 function M.get_larger_parent(node)
   return M.get_range_max_node(node):parent()
 end
 
---- @alias TSSexpGetNode fun(): TSNode|nil
+---@alias TSSexpGetNode fun(): TSNode|nil
 
---- @type TSSexpGetNode
+---@type TSSexpGetNode
 function M.get_elem_node()
   local start = vim.fn.getpos "v"
   local end_ = vim.fn.getpos "."
@@ -45,7 +45,7 @@ function M.get_elem_node()
   end
 end
 
---- @type TSSexpGetNode
+---@type TSSexpGetNode
 function M.get_form_node()
   local node = M.get_elem_node()
   if node == nil then
@@ -54,24 +54,26 @@ function M.get_form_node()
   return M.get_larger_parent(node)
 end
 
---- @type TSSexpGetNode
+---@type TSSexpGetNode
 function M.get_top_level_node()
-  local node = M.get_elem_node()
-  if node == nil then
-    return
-  end
+  local start = vim.fn.getpos "v"
+  local end_ = vim.fn.getpos "."
   local parser = vim.treesitter.get_parser()
   local root = parser:parse()[1]:root()
   for child_node, _ in root:iter_children() do
-    if child_node:named() and vim.treesitter.is_ancestor(child_node, node) then
+    if
+      child_node:named()
+      and vim.treesitter.is_in_node_range(child_node, start[2] - 1, start[3] - 1)
+      and vim.treesitter.is_in_node_range(child_node, end_[2] - 1, end_[3] - 1)
+    then
       return child_node
     end
   end
 end
 
---- @alias TSSexpGetRange fun(node: TSNode): integer, integer, integer, integer
+---@alias TSSexpGetRange fun(node: TSNode): integer, integer, integer, integer
 
---- @type TSSexpGetRange
+---@type TSSexpGetRange
 function M.get_unnamed_start_range(node)
   local end_row, end_col
   local start_row, start_col, _, _ = node:range()
@@ -90,7 +92,7 @@ function M.get_unnamed_start_range(node)
   return start_row, start_col, end_row, end_col
 end
 
---- @type TSSexpGetRange
+---@type TSSexpGetRange
 function M.get_unnamed_end_range(node)
   local start_row, start_col
   local _, _, end_row, end_col = node:range()
@@ -109,14 +111,14 @@ function M.get_unnamed_end_range(node)
   return start_row, start_col, end_row, end_col
 end
 
---- @type TSSexpGetRange
+---@type TSSexpGetRange
 function M.get_i_range(node)
   local _, _, start_row, start_col = M.get_unnamed_start_range(node)
   local end_row, end_col, _, _ = M.get_unnamed_end_range(node)
   return start_row, start_col, end_row, end_col
 end
 
---- @type TSSexpGetRange
+---@type TSSexpGetRange
 function M.get_a_range(node)
   local start_row, start_col, end_row, end_col = node:range()
   local last_line = vim.fn.line "$"

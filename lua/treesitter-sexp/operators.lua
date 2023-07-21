@@ -1,24 +1,7 @@
 local actions = require "treesitter-sexp.actions"
 local utils = require "treesitter-sexp.utils"
 
---- @alias TSSexpOpName
---- | "swap_prev_elem"
---- | "swap_next_elem"
---- | "swap_next_form"
---- | "swap_prev_form"
---- | "promote_elem"
---- | "promote_form"
---- | "splice"
---- | "slurp_left"
---- | "slurp_right"
---- | "barf_left"
---- | "barf_right"
-
---- @class TSSexpOp
---- @field desc string
---- @field actions TSSexpAction
---- @field get_node TSSexpGetNode
-
+---@type table<string, {desc: string, action: TSSexpAction, get_node:TSSexpGetNode}>
 local M = {
   swap_prev_elem = {
     desc = "Swap previous element",
