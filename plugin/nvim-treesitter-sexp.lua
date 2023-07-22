@@ -14,6 +14,13 @@ require("nvim-treesitter").define_modules {
       slurp_right = ">)",
       barf_left = ">(",
       barf_right = "<)",
+      -- Motions
+      form_start = "(",
+      form_end = ")",
+      prev_elem = "[e",
+      next_elem = "]e",
+      prev_top_level = "[[",
+      next_top_level = "]]",
       -- Text objects
       inner_elem = "ie",
       inner_form = "if",

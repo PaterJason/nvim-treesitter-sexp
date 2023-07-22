@@ -8,50 +8,32 @@ local M = {}
 
 function M.swap_next(node)
   node = utils.get_range_max_node(node)
-  local next_node = node
-  for _ = 1, vim.v.count1 do
-    next_node = next_node:next_named_sibling()
-    if next_node == nil then
-      vim.notify "No next node"
-      return
-    end
+  local next_node = utils.get_next_node_count(node)
+  if not node:equal(next_node) then
+    ts_utils.swap_nodes(node, next_node, 0, true)
   end
-
-  ts_utils.swap_nodes(node, next_node, 0, true)
 end
 
 function M.swap_prev(node)
   node = utils.get_range_max_node(node)
-  local prev_node = node
-  for _ = 1, vim.v.count1 do
-    prev_node = prev_node:prev_named_sibling()
-    if prev_node == nil then
-      vim.notify "No previous node"
-      return
-    end
+  local prev_node = utils.get_prev_node_count(node)
+  if not node:equal(prev_node) then
+    ts_utils.swap_nodes(node, prev_node, 0, true)
   end
-
-  ts_utils.swap_nodes(node, prev_node, 0, true)
 end
 
 function M.promote(node)
-  local parent_node = node
-  for _ = 1, vim.v.count1 do
-    local next_parent_node = utils.get_larger_parent(parent_node)
-    if next_parent_node == nil then
-      vim.notify "No parent node"
-      return
-    end
-    parent_node = next_parent_node
+  local parent_node = utils.get_parent_node_count(node)
+  if not node:equal(parent_node) then
+    local text = vim.treesitter.get_node_text(node, 0)
+    local start_row, start_col, end_row, end_col = utils.get_a_range(parent_node)
+
+    vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, vim.split(text, "\n"))
+    vim.api.nvim_win_set_cursor(0, { start_row + 1, start_col })
   end
-
-  local text = vim.treesitter.get_node_text(node, 0)
-  local start_row, start_col, end_row, end_col = utils.get_a_range(parent_node)
-
-  vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, vim.split(text, "\n"))
-  vim.api.nvim_win_set_cursor(0, { start_row + 1, start_col })
 end
 
+-- Splice the inner range onto the outer range
 function M.splice(node)
   local inner_range = { utils.get_i_range(node) }
   local outer_range = { utils.get_a_range(node) }
@@ -61,77 +43,65 @@ function M.splice(node)
 end
 
 function M.slurp_left(node)
-  local target_node = utils.get_range_max_node(node)
-  for _ = 1, vim.v.count1 do
-    target_node = target_node:prev_named_sibling()
-    if target_node == nil then
-      vim.notify "No target node"
-      return
-    end
+  local target_node = utils.get_prev_node_count(utils.get_range_max_node(node))
+  if target_node ~= nil then
+    local start_range = { utils.get_unnamed_start_range(node) }
+    local target_range = { target_node:range() }
+
+    ts_utils.swap_nodes(start_range, { target_range[1], target_range[2], target_range[1], target_range[2] }, 0, true)
   end
-
-  local start_range = { utils.get_unnamed_start_range(node) }
-  local target_range = { target_node:range() }
-
-  ts_utils.swap_nodes(start_range, { target_range[1], target_range[2], target_range[1], target_range[2] }, 0, true)
 end
 
 function M.slurp_right(node)
-  local target_node = utils.get_range_max_node(node)
-  for _ = 1, vim.v.count1 do
-    target_node = target_node:next_named_sibling()
-    if target_node == nil then
-      vim.notify "No target node"
-      return
-    end
+  local target_node = utils.get_next_node_count(utils.get_range_max_node(node))
+  if node:equal(target_node) then
+    local end_range = { utils.get_unnamed_end_range(node) }
+    local target_range = { target_node:range() }
+
+    ts_utils.swap_nodes(end_range, { target_range[3], target_range[4], target_range[3], target_range[4] }, 0, true)
   end
-
-  local end_range = { utils.get_unnamed_end_range(node) }
-  local target_range = { target_node:range() }
-
-  ts_utils.swap_nodes(end_range, { target_range[3], target_range[4], target_range[3], target_range[4] }, 0, true)
 end
 
 function M.barf_left(node)
-  local target_node = node:named_child(0)
-  if target_node == nil then
-    vim.notify "No named node"
+  ---@type TSNode|nil
+  if node:named_child_count() == 0 then
+    vim.notify "No nodes to barf"
     return
   end
-  for _ = 1, vim.v.count1 - 1 do
-    target_node = target_node:next_named_sibling()
-    if target_node == nil then
-      vim.notify "No named node"
-      return
-    end
+  local target_node = node:child(0)
+  if target_node == nil or target_node:named() then
+    vim.notify "No valid start range"
+    return
   end
+  target_node = utils.get_next_node_count(target_node)
   target_node = target_node:next_named_sibling() or target_node:next_sibling()
+  if target_node ~= nil then
+    local start_range = { utils.get_unnamed_start_range(node) }
+    local target_range = { target_node:range() }
 
-  local start_range = { utils.get_unnamed_start_range(node) }
-  local target_range = { target_node:range() }
-
-  ts_utils.swap_nodes(start_range, { target_range[1], target_range[2], target_range[1], target_range[2] }, 0, true)
+    ts_utils.swap_nodes(start_range, { target_range[1], target_range[2], target_range[1], target_range[2] }, 0, true)
+  end
 end
 
 function M.barf_right(node)
-  local target_node = node:named_child(node:named_child_count() - 1)
-  if target_node == nil then
-    vim.notify "No named node"
+  ---@type TSNode|nil
+  if node:named_child_count() == 0 then
+    vim.notify "No nodes to barf"
     return
   end
-  for _ = 1, vim.v.count1 - 1 do
-    target_node = target_node:prev_named_sibling()
-    if target_node == nil then
-      vim.notify "No named node"
-      return
-    end
+  local target_node = node:child(node:child_count() - 1)
+  if target_node == nil or target_node:named() then
+    vim.notify "No valid end range"
+    return
   end
+  target_node = utils.get_prev_node_count(target_node)
   target_node = target_node:prev_named_sibling() or target_node:prev_sibling()
+  if target_node ~= nil then
+    local end_range = { utils.get_unnamed_end_range(node) }
+    local target_range = { target_node:range() }
 
-  local end_range = { utils.get_unnamed_end_range(node) }
-  local target_range = { target_node:range() }
-
-  ts_utils.swap_nodes(end_range, { target_range[3], target_range[4], target_range[3], target_range[4] }, 0, true)
+    ts_utils.swap_nodes(end_range, { target_range[3], target_range[4], target_range[3], target_range[4] }, 0, true)
+  end
 end
 
 return M

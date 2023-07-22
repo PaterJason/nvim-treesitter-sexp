@@ -32,6 +32,46 @@ function M.get_larger_parent(node)
   return M.get_range_max_node(node):parent()
 end
 
+---@type fun(node: TSNode): TSNode
+function M.get_next_node_count(node)
+  local next_node = node
+  for _ = 1, vim.v.count1 do
+    next_node = node:next_named_sibling()
+    if next_node == nil then
+      return node
+    else
+      node = next_node
+    end
+  end
+  return node
+end
+
+---@type fun(node: TSNode): TSNode
+function M.get_prev_node_count(node)
+  local prev_node = node
+  for _ = 1, vim.v.count1 do
+    prev_node = node:prev_named_sibling()
+    if prev_node == nil then
+      return node
+    else
+      node = prev_node
+    end
+  end
+  return node
+end
+
+---@type fun(node: TSNode): TSNode
+function M.get_parent_node_count(node)
+  for _ = 1, vim.v.count1 do
+    local parent_node = M.get_larger_parent(node)
+    if parent_node == nil then
+      return node
+    end
+    node = parent_node
+  end
+  return node
+end
+
 ---@alias TSSexpGetNode fun(): TSNode|nil
 
 ---@type TSSexpGetNode
@@ -48,10 +88,17 @@ end
 ---@type TSSexpGetNode
 function M.get_form_node()
   local node = M.get_elem_node()
-  if node == nil then
-    return
+  if node ~= nil then
+    return M.get_larger_parent(node)
   end
-  return M.get_larger_parent(node)
+end
+
+---@type TSSexpGetNode
+function M.get_form_node_count()
+  local node = M.get_elem_node()
+  if node ~= nil then
+    return M.get_parent_node_count(node)
+  end
 end
 
 ---@type TSSexpGetNode

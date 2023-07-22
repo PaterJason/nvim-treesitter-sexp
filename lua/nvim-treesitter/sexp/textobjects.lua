@@ -1,7 +1,12 @@
 local ts_utils = require "nvim-treesitter.ts_utils"
 local utils = require "nvim-treesitter.sexp.utils"
 
----@type table<string, {desc: string, get_node: TSSexpGetNode, get_range:TSSexpGetRange}>
+---@class TSSexpTextobject
+---@field desc string
+---@field get_node TSSexpGetNode
+---@field get_range TSSexpGetRange
+
+---@type table<string, TSSexpTextobject>
 local M = {
   inner_elem = {
     desc = "Inner element",
@@ -15,12 +20,12 @@ local M = {
   },
   inner_form = {
     desc = "Inner form",
-    get_node = utils.get_form_node,
+    get_node = utils.get_form_node_count,
     get_range = utils.get_i_range,
   },
   outer_form = {
     desc = "Outer form",
-    get_node = utils.get_form_node,
+    get_node = utils.get_form_node_count,
     get_range = utils.get_a_range,
   },
   inner_top_level = {

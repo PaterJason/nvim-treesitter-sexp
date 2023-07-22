@@ -1,7 +1,12 @@
 local actions = require "nvim-treesitter.sexp.actions"
 local utils = require "nvim-treesitter.sexp.utils"
 
----@type table<string, {desc: string, action: TSSexpAction, get_node:TSSexpGetNode}>
+---@class TSSexpOperator
+---@field desc string
+---@field action TSSexpAction
+---@field get_node TSSexpGetNode
+
+---@type table<string, TSSexpOperator>
 local M = {
   swap_prev_elem = {
     desc = "Swap previous element",
