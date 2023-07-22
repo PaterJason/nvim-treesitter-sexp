@@ -1,14 +1,14 @@
-local config = require "treesitter-sexp.config"
+local configs = require "nvim-treesitter.configs"
 
 local M = {}
 
 ---@type fun(node: TSNode): TSNode
 function M.get_valid_node(node)
   local parent = node:parent()
-
   local lang = vim.treesitter.language.get_lang(vim.bo.filetype)
-  local take_parent_node_types = config.take_parent_node_types[lang] or {}
-  while parent ~= nil and vim.tbl_contains(take_parent_node_types, parent:type()) do
+  local config = configs.get_module "sexp"
+  local parent_node_overrides = config.parent_node_overrides[lang] or {}
+  while parent ~= nil and vim.tbl_contains(parent_node_overrides, parent:type()) do
     node = parent
     parent = parent:parent()
   end

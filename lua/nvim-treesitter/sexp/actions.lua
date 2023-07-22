@@ -1,4 +1,4 @@
-local utils = require "treesitter-sexp.utils"
+local utils = require "nvim-treesitter.sexp.utils"
 local ts_utils = require "nvim-treesitter.ts_utils"
 
 ---@alias TSSexpAction fun(node: TSNode): nil
