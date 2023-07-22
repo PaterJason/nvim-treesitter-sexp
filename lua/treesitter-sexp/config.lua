@@ -1,8 +1,7 @@
-require("nvim-treesitter").define_modules {
-  sexp = {
-    module_path = "nvim-treesitter.sexp",
+---@type TSSexp.Config
+local defaults = {
+  operators = {
     keymaps = {
-      -- Operators
       swap_prev_elem = "<e",
       swap_next_elem = ">e",
       swap_prev_form = "<f",
@@ -14,14 +13,20 @@ require("nvim-treesitter").define_modules {
       slurp_right = ">)",
       barf_left = ">(",
       barf_right = "<)",
-      -- Motions
+    },
+  },
+  motions = {
+    keymaps = {
       form_start = "(",
       form_end = ")",
       prev_elem = "[e",
       next_elem = "]e",
       prev_top_level = "[[",
       next_top_level = "]]",
-      -- Text objects
+    },
+  },
+  textobjects = {
+    keymaps = {
       inner_elem = "ie",
       inner_form = "if",
       inner_top_level = "iF",
@@ -29,14 +34,26 @@ require("nvim-treesitter").define_modules {
       outer_form = "af",
       outer_top_level = "aF",
     },
-    parent_node_overrides = {
-      clojure = { "kwd_lit", "sym_lit" },
-      javascript = { "member_expression" },
-      json = { "string" },
-      lua = { "string" },
-      rust = { "field_expression" },
-      typescript = { "string" },
-      fennel = { "multi_symbol", "string" },
-    },
+  },
+  parent_node_overrides = {
+    clojure = { "kwd_lit", "sym_lit" },
+    javascript = { "member_expression" },
+    json = { "string" },
+    lua = { "string" },
+    rust = { "field_expression" },
+    typescript = { "string" },
+    fennel = { "multi_symbol", "string" },
   },
 }
+
+local M = {}
+
+---@type TSSexp.Config
+M.options = {}
+
+---@param options? TSSexp.Config
+function M.setup(options)
+  M.options = vim.tbl_deep_extend("force", defaults, options or {})
+end
+
+return M

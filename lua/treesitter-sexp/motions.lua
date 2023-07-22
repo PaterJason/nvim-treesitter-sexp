@@ -1,11 +1,6 @@
-local utils = require "nvim-treesitter.sexp.utils"
+local utils = require "treesitter-sexp.utils"
 
----@class TSSexpMotion
----@field desc string
----@field get_node TSSexpGetNode
----@field pos "start"|"end"
-
----@type table<string, TSSexpMotion>
+---@type table<string, TSSexp.Motion>
 local M = {
   form_start = {
     desc = "Form start",

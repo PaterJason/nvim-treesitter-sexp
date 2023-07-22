@@ -1,10 +1,5 @@
 local ts_utils = require "nvim-treesitter.ts_utils"
-local utils = require "nvim-treesitter.sexp.utils"
-
----@class TSSexpTextobject
----@field desc string
----@field get_node TSSexpGetNode
----@field get_range TSSexpGetRange
+local utils = require "treesitter-sexp.utils"
 
 ---@type table<string, TSSexpTextobject>
 local M = {

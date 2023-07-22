@@ -1,4 +1,4 @@
-local configs = require "nvim-treesitter.configs"
+local options = require("treesitter-sexp.config").options
 
 local M = {}
 
@@ -6,8 +6,7 @@ local M = {}
 function M.get_valid_node(node)
   local parent = node:parent()
   local lang = vim.treesitter.language.get_lang(vim.bo.filetype)
-  local config = configs.get_module "sexp"
-  local parent_node_overrides = config.parent_node_overrides[lang] or {}
+  local parent_node_overrides = options.parent_node_overrides[lang] or {}
   while parent ~= nil and vim.tbl_contains(parent_node_overrides, parent:type()) do
     node = parent
     parent = parent:parent()
@@ -34,7 +33,7 @@ end
 
 ---@type fun(node: TSNode): TSNode
 function M.get_next_node_count(node)
-  local next_node = node
+  local next_node
   for _ = 1, vim.v.count1 do
     next_node = node:next_named_sibling()
     if next_node == nil then
@@ -48,7 +47,7 @@ end
 
 ---@type fun(node: TSNode): TSNode
 function M.get_prev_node_count(node)
-  local prev_node = node
+  local prev_node
   for _ = 1, vim.v.count1 do
     prev_node = node:prev_named_sibling()
     if prev_node == nil then
@@ -72,9 +71,7 @@ function M.get_parent_node_count(node)
   return node
 end
 
----@alias TSSexpGetNode fun(): TSNode|nil
-
----@type TSSexpGetNode
+---@type TSSexp.GetNode
 function M.get_elem_node()
   local start = vim.fn.getpos "v"
   local end_ = vim.fn.getpos "."
@@ -85,7 +82,7 @@ function M.get_elem_node()
   end
 end
 
----@type TSSexpGetNode
+---@type TSSexp.GetNode
 function M.get_form_node()
   local node = M.get_elem_node()
   if node ~= nil then
@@ -93,7 +90,7 @@ function M.get_form_node()
   end
 end
 
----@type TSSexpGetNode
+---@type TSSexp.GetNode
 function M.get_form_node_count()
   local node = M.get_elem_node()
   if node ~= nil then
@@ -101,7 +98,7 @@ function M.get_form_node_count()
   end
 end
 
----@type TSSexpGetNode
+---@type TSSexp.GetNode
 function M.get_top_level_node()
   local start = vim.fn.getpos "v"
   local end_ = vim.fn.getpos "."
@@ -118,9 +115,7 @@ function M.get_top_level_node()
   end
 end
 
----@alias TSSexpGetRange fun(node: TSNode): integer, integer, integer, integer
-
----@type TSSexpGetRange
+---@type TSSexp.GetRange
 function M.get_unnamed_start_range(node)
   local end_row, end_col
   local start_row, start_col, _, _ = node:range()
@@ -139,7 +134,7 @@ function M.get_unnamed_start_range(node)
   return start_row, start_col, end_row, end_col
 end
 
----@type TSSexpGetRange
+---@type TSSexp.GetRange
 function M.get_unnamed_end_range(node)
   local start_row, start_col
   local _, _, end_row, end_col = node:range()
@@ -158,14 +153,14 @@ function M.get_unnamed_end_range(node)
   return start_row, start_col, end_row, end_col
 end
 
----@type TSSexpGetRange
+---@type TSSexp.GetRange
 function M.get_i_range(node)
   local _, _, start_row, start_col = M.get_unnamed_start_range(node)
   local end_row, end_col, _, _ = M.get_unnamed_end_range(node)
   return start_row, start_col, end_row, end_col
 end
 
----@type TSSexpGetRange
+---@type TSSexp.GetRange
 function M.get_a_range(node)
   local start_row, start_col, end_row, end_col = node:range()
   local last_line = vim.fn.line "$"

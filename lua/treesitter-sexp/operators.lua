@@ -1,10 +1,5 @@
-local actions = require "nvim-treesitter.sexp.actions"
-local utils = require "nvim-treesitter.sexp.utils"
-
----@class TSSexpOperator
----@field desc string
----@field action TSSexpAction
----@field get_node TSSexpGetNode
+local actions = require "treesitter-sexp.actions"
+local utils = require "treesitter-sexp.utils"
 
 ---@type table<string, TSSexpOperator>
 local M = {
