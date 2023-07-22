@@ -36,12 +36,12 @@ function M.detach(bufnr, lang)
     if lhs then
       local operator = operators[key]
       if operator then
-        vim.keymap.del("n", lhs, {buffer = bufnr})
+        vim.keymap.del("n", lhs, { buffer = bufnr })
       end
 
       local textobject = textobjects[key]
       if textobject then
-        vim.keymap.del({ "o", "x" }, lhs, {buffer = bufnr})
+        vim.keymap.del({ "o", "x" }, lhs, { buffer = bufnr })
       end
     end
   end

@@ -53,22 +53,14 @@ function M.promote(node)
 end
 
 function M.splice(node)
-  local ranges = {}
-  for child_node, _ in node:iter_children() do
-    if not child_node:named() then
-      ranges[#ranges + 1] = { child_node:range() }
-    end
-  end
+  local inner_range = { utils.get_i_range(node) }
+  local outer_range = { utils.get_a_range(node) }
 
-  for i = 1, #ranges do
-    local range = ranges[#ranges + 1 - i]
-    vim.api.nvim_buf_set_text(0, range[1], range[2], range[3], range[4], {})
-  end
+  local text = vim.api.nvim_buf_get_text(0, inner_range[1], inner_range[2], inner_range[3], inner_range[4], {})
+  vim.api.nvim_buf_set_text(0, outer_range[1], outer_range[2], outer_range[3], outer_range[4], text)
 end
 
 function M.slurp_left(node)
-  local start_range = { utils.get_unnamed_start_range(node) }
-
   local target_node = utils.get_range_max_node(node)
   for _ = 1, vim.v.count1 do
     target_node = target_node:prev_named_sibling()
@@ -78,17 +70,13 @@ function M.slurp_left(node)
     end
   end
 
+  local start_range = { utils.get_unnamed_start_range(node) }
   local target_range = { target_node:range() }
-  local text = vim.api.nvim_buf_get_text(0, start_range[1], start_range[2], start_range[3], start_range[4], {})
 
-  vim.api.nvim_buf_set_text(0, start_range[1], start_range[2], start_range[3], start_range[4], {})
-  vim.api.nvim_buf_set_text(0, target_range[1], target_range[2], target_range[1], target_range[2], text)
-  vim.api.nvim_win_set_cursor(0, { target_range[1] + 1, target_range[2] })
+  ts_utils.swap_nodes(start_range, { target_range[1], target_range[2], target_range[1], target_range[2] }, 0, true)
 end
 
 function M.slurp_right(node)
-  local end_range = { utils.get_unnamed_end_range(node) }
-
   local target_node = utils.get_range_max_node(node)
   for _ = 1, vim.v.count1 do
     target_node = target_node:next_named_sibling()
@@ -98,17 +86,13 @@ function M.slurp_right(node)
     end
   end
 
+  local end_range = { utils.get_unnamed_end_range(node) }
   local target_range = { target_node:range() }
-  local text = vim.api.nvim_buf_get_text(0, end_range[1], end_range[2], end_range[3], end_range[4], {})
 
-  vim.api.nvim_buf_set_text(0, target_range[3], target_range[4], target_range[3], target_range[4], text)
-  vim.api.nvim_buf_set_text(0, end_range[1], end_range[2], end_range[3], end_range[4], {})
-  vim.api.nvim_win_set_cursor(0, { target_range[3] + 1, target_range[4] })
+  ts_utils.swap_nodes(end_range, { target_range[3], target_range[4], target_range[3], target_range[4] }, 0, true)
 end
 
 function M.barf_left(node)
-  local start_range = { utils.get_unnamed_start_range(node) }
-
   local target_node = node:named_child(0)
   if target_node == nil then
     vim.notify "No named node"
@@ -123,17 +107,13 @@ function M.barf_left(node)
   end
   target_node = target_node:next_named_sibling() or target_node:next_sibling()
 
+  local start_range = { utils.get_unnamed_start_range(node) }
   local target_range = { target_node:range() }
-  local text = vim.api.nvim_buf_get_text(0, start_range[1], start_range[2], start_range[3], start_range[4], {})
 
-  vim.api.nvim_buf_set_text(0, target_range[1], target_range[2], target_range[1], target_range[2], text)
-  vim.api.nvim_buf_set_text(0, start_range[1], start_range[2], start_range[3], start_range[4], {})
-  vim.api.nvim_win_set_cursor(0, { target_range[1] + 1, target_range[2] })
+  ts_utils.swap_nodes(start_range, { target_range[1], target_range[2], target_range[1], target_range[2] }, 0, true)
 end
 
 function M.barf_right(node)
-  local end_range = { utils.get_unnamed_end_range(node) }
-
   local target_node = node:named_child(node:named_child_count() - 1)
   if target_node == nil then
     vim.notify "No named node"
@@ -148,12 +128,10 @@ function M.barf_right(node)
   end
   target_node = target_node:prev_named_sibling() or target_node:prev_sibling()
 
+  local end_range = { utils.get_unnamed_end_range(node) }
   local target_range = { target_node:range() }
-  local text = vim.api.nvim_buf_get_text(0, end_range[1], end_range[2], end_range[3], end_range[4], {})
 
-  vim.api.nvim_buf_set_text(0, end_range[1], end_range[2], end_range[3], end_range[4], {})
-  vim.api.nvim_buf_set_text(0, target_range[3], target_range[4], target_range[3], target_range[4], text)
-  vim.api.nvim_win_set_cursor(0, { target_range[3] + 1, target_range[4] })
+  ts_utils.swap_nodes(end_range, { target_range[3], target_range[4], target_range[3], target_range[4] }, 0, true)
 end
 
 return M
