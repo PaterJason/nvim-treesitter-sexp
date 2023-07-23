@@ -1,7 +1,7 @@
 local actions = require "treesitter-sexp.actions"
 local utils = require "treesitter-sexp.utils"
 
----@type table<string, TSSexpOperator>
+---@type table<string, TSSexp.Operator>
 local M = {
   swap_prev_elem = {
     desc = "Swap previous element",

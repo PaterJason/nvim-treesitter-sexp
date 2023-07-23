@@ -1,17 +1,18 @@
 --- Get node around cursor
 ---@alias TSSexp.GetNode fun(): TSNode|nil
+--- Get range from treesitter node
 ---@alias TSSexp.GetRange fun(node: TSNode): integer, integer, integer, integer
 
 --- Action to apply to treesitter node
 ---@alias TSSexp.Action fun(node: TSNode): nil
 
----@class TSSexpOperator
+---@class TSSexp.Operator
 ---@field desc string Description
 ---@field action TSSexp.Action
 ---@field get_node TSSexp.GetNode
 ---@overload fun(): nil
 
----@class TSSexpTextobject
+---@class TSSexp.Textobject
 ---@field desc string Description
 ---@field get_node TSSexp.GetNode
 ---@field get_range TSSexp.GetRange
@@ -23,10 +24,26 @@
 ---@field pos "start"|"end" Move cursor to start or end of node
 ---@overload fun(): nil
 
----@alias TSSexp.Keymaps table<string, string>
+--- Key mappings, set entry to false to disable
+---@alias TSSexp.Keymaps table<string, string|false>
 
+--- Configuration table
 ---@class TSSexp.Config
----@field operators {keymaps: TSSexp.Keymaps}
----@field motions {keymaps: TSSexp.Keymaps}
----@field textobjects {keymaps: TSSexp.Keymaps}
----@field parent_node_overrides table<string, string[]>
+---@field operators? TSSexp.Config.Operators
+---@field motions? TSSexp.Config.Motions
+---@field textobjects? TSSexp.Config.Textobjects
+---@field parent_node_overrides? TSSexp.Config.ParentNodeOverrides
+
+--- Operator Configuration
+---@class TSSexp.Config.Operators
+---@field keymaps? TSSexp.Keymaps
+
+--- Motion Configuration
+---@class TSSexp.Config.Motions
+---@field keymaps? TSSexp.Keymaps
+
+--- Text object Configuration
+---@class TSSexp.Config.Textobjects
+---@field keymaps? TSSexp.Keymaps
+
+---@alias TSSexp.Config.ParentNodeOverrides table<string, string[]>

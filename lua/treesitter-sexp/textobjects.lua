@@ -1,7 +1,7 @@
 local ts_utils = require "nvim-treesitter.ts_utils"
 local utils = require "treesitter-sexp.utils"
 
----@type table<string, TSSexpTextobject>
+---@type table<string, TSSexp.Textobject>
 local M = {
   inner_elem = {
     desc = "Inner element",
