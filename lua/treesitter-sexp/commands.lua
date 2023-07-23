@@ -1,7 +1,7 @@
 local actions = require "treesitter-sexp.actions"
 local utils = require "treesitter-sexp.utils"
 
----@type table<string, TSSexp.Operator>
+---@type table<string, TSSexp.Command>
 local M = {
   swap_prev_elem = {
     desc = "Swap previous element",
@@ -60,15 +60,15 @@ local M = {
   },
 }
 
-for key, operator in pairs(M) do
+for key, command in pairs(M) do
   setmetatable(M[key], {
     __call = function()
-      local node = operator.get_node()
+      local node = command.get_node()
       if node == nil then
         vim.notify "Node not found"
         return
       end
-      operator.action(node)
+      command.action(node)
     end,
   })
 end

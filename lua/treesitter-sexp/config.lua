@@ -1,6 +1,6 @@
 ---@type TSSexp.Config
 local defaults = {
-  operators = {
+  commands = {
     keymaps = {
       swap_prev_elem = "<e",
       swap_next_elem = ">e",

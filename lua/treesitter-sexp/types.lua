@@ -6,7 +6,7 @@
 --- Action to apply to treesitter node
 ---@alias TSSexp.Action fun(node: TSNode): nil
 
----@class TSSexp.Operator
+---@class TSSexp.Command
 ---@field desc string Description
 ---@field action TSSexp.Action
 ---@field get_node TSSexp.GetNode
@@ -29,13 +29,13 @@
 
 --- Configuration table
 ---@class TSSexp.Config
----@field operators? TSSexp.Config.Operators
+---@field commands? TSSexp.Config.Commands
 ---@field motions? TSSexp.Config.Motions
 ---@field textobjects? TSSexp.Config.Textobjects
 ---@field parent_node_overrides? TSSexp.Config.ParentNodeOverrides
 
---- Operator Configuration
----@class TSSexp.Config.Operators
+--- Command Configuration
+---@class TSSexp.Config.Commands
 ---@field keymaps? TSSexp.Keymaps
 
 --- Motion Configuration
