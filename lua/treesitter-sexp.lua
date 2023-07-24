@@ -46,7 +46,7 @@ function M.setup(opts)
           end, { desc = textobject.desc, buffer = bufnr, silent = true })
         end
       end
-      for key, lhs in pairs(config.options.textobjects.keymaps) do
+      for key, lhs in pairs(config.options.motions.keymaps) do
         local motion = require("treesitter-sexp.motions")[key]
         if lhs and motion then
           vim.keymap.set({ "n", "o", "x" }, lhs, function()
