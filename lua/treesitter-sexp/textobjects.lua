@@ -35,17 +35,20 @@ local M = {
   },
 }
 
-for key, textobject in pairs(M) do
-  setmetatable(M[key], {
-    __call = function()
-      local node = textobject.get_node()
-      if node == nil then
-        vim.notify "Node not found"
-        return
-      end
-      ts_utils.update_selection(0, { textobject.get_range(node) }, "v")
-    end,
-  })
+local metatable = {
+  ---@param self TSSexp.Textobject
+  __call = function(self)
+    local node = self.get_node()
+    if node == nil then
+      vim.notify "Node not found"
+      return
+    end
+    ts_utils.update_selection(0, { self.get_range(node) }, "v")
+  end,
+}
+
+for _, textobject in pairs(M) do
+  setmetatable(textobject, metatable)
 end
 
 return M

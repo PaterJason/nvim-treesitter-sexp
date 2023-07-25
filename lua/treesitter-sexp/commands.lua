@@ -60,17 +60,20 @@ local M = {
   },
 }
 
-for key, command in pairs(M) do
-  setmetatable(M[key], {
-    __call = function()
-      local node = command.get_node()
-      if node == nil then
-        vim.notify "Node not found"
-        return
-      end
-      command.action(node)
-    end,
-  })
+local metatable = {
+  ---@param self TSSexp.Command
+  __call = function(self)
+    local node = self.get_node()
+    if node == nil then
+      vim.notify "Node not found"
+      return
+    end
+    self.action(node)
+  end,
+}
+
+for _, command in pairs(M) do
+  setmetatable(command, metatable)
 end
 
 return M
