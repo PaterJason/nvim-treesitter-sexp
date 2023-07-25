@@ -27,7 +27,7 @@ function M.setup(opts)
         end
       end
       vim.api.nvim_buf_create_user_command(bufnr, "TSSexp", function(info)
-        local command = require "treesitter-sexp.commands"[info.args]
+        local command = require("treesitter-sexp.commands")[info.args]
         if command then
           command()
         end

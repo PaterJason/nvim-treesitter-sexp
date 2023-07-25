@@ -42,7 +42,7 @@ end
 
 function M.slurp_left(node)
   local target_node = utils.get_prev_node_count(utils.get_range_max_node(node))
-  if target_node ~= nil then
+  if not node:equal(target_node) then
     local start_range = { utils.get_unnamed_start_range(node) }
     local target_range = { target_node:range() }
 
@@ -52,7 +52,7 @@ end
 
 function M.slurp_right(node)
   local target_node = utils.get_next_node_count(utils.get_range_max_node(node))
-  if node:equal(target_node) then
+  if not node:equal(target_node) then
     local end_range = { utils.get_unnamed_end_range(node) }
     local target_range = { target_node:range() }
 
@@ -61,7 +61,6 @@ function M.slurp_right(node)
 end
 
 function M.barf_left(node)
-  ---@type TSNode|nil
   if node:named_child_count() == 0 then
     vim.notify "No nodes to barf"
     return
@@ -82,7 +81,6 @@ function M.barf_left(node)
 end
 
 function M.barf_right(node)
-  ---@type TSNode|nil
   if node:named_child_count() == 0 then
     vim.notify "No nodes to barf"
     return

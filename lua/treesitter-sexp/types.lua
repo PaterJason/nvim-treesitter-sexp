@@ -1,3 +1,5 @@
+---@meta
+
 --- Get node around cursor
 ---@alias TSSexp.GetNode fun(): TSNode|nil
 --- Get range from treesitter node
