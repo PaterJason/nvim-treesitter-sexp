@@ -2,6 +2,21 @@ local options = require("treesitter-sexp.config").options
 
 local M = {}
 
+---@type fun(node: TSNode, query: Query, capture: string): boolean
+function M.is_valid(node, query, capture)
+  if query == nil then
+    return false
+  end
+
+  for id, cnode in query:iter_captures(node, 0, 0, -1) do
+    local name = query.captures[id]
+    if name == capture and node:equal(cnode) then
+      return true
+    end
+  end
+  return false
+end
+
 ---@type fun(node: TSNode): TSNode
 function M.get_valid_node(node)
   local parent = node:parent()
@@ -75,11 +90,44 @@ end
 function M.get_elem_node()
   local start = vim.fn.getpos "v"
   local end_ = vim.fn.getpos "."
+
   local parser = vim.treesitter.get_parser()
-  local node = parser:named_node_for_range { start[2] - 1, start[3] - 1, end_[2] - 1, end_[3] - 1 }
-  if node ~= nil then
-    return M.get_valid_node(node)
+  local root = parser:parse()[1]:root()
+
+  local lang = vim.treesitter.language.get_lang(vim.bo.filetype) or ""
+  local query = vim.treesitter.query.get(lang, "sexp")
+  if query == nil then
+    return
   end
+
+  local result = {}
+  for _, match in query:iter_matches(root, 0, 0, -1) do
+    local is_form = false
+    for id, cnode in pairs(match) do
+      local name = query.captures[id]
+      if name == "sexp.outer"
+         and (result.form == nil or vim.treesitter.is_ancestor(result.form, cnode))
+         and vim.treesitter.is_in_node_range(cnode, start[2] - 1, start[3] - 1)
+         and vim.treesitter.is_in_node_range(cnode, end_[2] - 1, end_[3] - 1)
+      then
+        is_form = true
+      end
+    end
+
+    if is_form then
+      for id, cnode in pairs(match) do
+        local name = query.captures[id]
+        if name == "sexp.outer" then
+          result.form = cnode
+          elseif name == "sexp.open" then
+          result.open = cnode
+          elseif name == "sexp.close" then
+          result.close = cnode
+        end
+      end
+    end
+  end
+  return result.form
 end
 
 ---@type TSSexp.GetNode
@@ -102,17 +150,44 @@ end
 function M.get_top_level_node()
   local start = vim.fn.getpos "v"
   local end_ = vim.fn.getpos "."
+
   local parser = vim.treesitter.get_parser()
   local root = parser:parse()[1]:root()
-  for child_node, _ in root:iter_children() do
-    if
-      child_node:named()
-      and vim.treesitter.is_in_node_range(child_node, start[2] - 1, start[3] - 1)
-      and vim.treesitter.is_in_node_range(child_node, end_[2] - 1, end_[3] - 1)
-    then
-      return child_node
+
+  local lang = vim.treesitter.language.get_lang(vim.bo.filetype) or ""
+  local query = vim.treesitter.query.get(lang, "sexp")
+  if query == nil then
+    return
+  end
+
+  local result = {}
+  for _, match in query:iter_matches(root, 0, 0, -1) do
+    local is_form = false
+    for id, cnode in pairs(match) do
+      local name = query.captures[id]
+      if name == "sexp.outer"
+         and (result.form == nil or vim.treesitter.is_ancestor(cnode, result.form))
+         and vim.treesitter.is_in_node_range(cnode, start[2] - 1, start[3] - 1)
+         and vim.treesitter.is_in_node_range(cnode, end_[2] - 1, end_[3] - 1)
+      then
+        is_form = true
+      end
+    end
+
+    if is_form then
+      for id, cnode in pairs(match) do
+        local name = query.captures[id]
+        if name == "sexp.outer" then
+          result.form = cnode
+          elseif name == "sexp.open" then
+          result.open = cnode
+          elseif name == "sexp.close" then
+          result.close = cnode
+        end
+      end
     end
   end
+  return result.form
 end
 
 ---@type TSSexp.GetRange
