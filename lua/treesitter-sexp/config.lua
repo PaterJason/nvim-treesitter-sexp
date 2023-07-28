@@ -1,7 +1,7 @@
 ---@type TSSexp.Config
 local defaults = {
-  commands = {
-    keymaps = {
+  keymaps = {
+    commands = {
       swap_prev_elem = "<e",
       swap_next_elem = ">e",
       swap_prev_form = "<f",
@@ -14,9 +14,7 @@ local defaults = {
       barf_left = ">(",
       barf_right = "<)",
     },
-  },
-  motions = {
-    keymaps = {
+    motions = {
       form_start = "(",
       form_end = ")",
       prev_elem = "[e",
@@ -24,9 +22,7 @@ local defaults = {
       prev_top_level = "[[",
       next_top_level = "]]",
     },
-  },
-  textobjects = {
-    keymaps = {
+    textobjects = {
       inner_elem = "ie",
       inner_form = "if",
       inner_top_level = "iF",
@@ -34,15 +30,6 @@ local defaults = {
       outer_form = "af",
       outer_top_level = "aF",
     },
-  },
-  parent_node_overrides = {
-    clojure = { "kwd_lit", "sym_lit" },
-    javascript = { "member_expression" },
-    json = { "string" },
-    lua = { "string" },
-    rust = { "field_expression" },
-    typescript = { "string" },
-    fennel = { "multi_symbol", "string" },
   },
 }
 

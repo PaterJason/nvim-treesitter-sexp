@@ -1,3 +1,5 @@
+local utils = require "treesitter-sexp.utils"
+
 local M = {}
 
 ---@param opts? TSSexp.Config
@@ -10,24 +12,48 @@ function M.setup(opts)
       local bufnr = args.buf
       local filetype = args.match
 
-      local lang = vim.treesitter.language.get_lang(filetype)
       local config = require "treesitter-sexp.config"
-      if lang == nil or vim.tbl_isempty(config.options) then
+
+      local query = utils.get_query(filetype)
+      if query == nil or vim.tbl_isempty(config.options) then
         return
       end
 
       local commands = require "treesitter-sexp.commands"
-      for key, lhs in pairs(config.options.commands.keymaps) do
-        local command = commands[key]
-        if lhs and command then
-          vim.keymap.set("n", lhs, function()
-            vim.go.operatorfunc = "v:lua.require'treesitter-sexp.commands'." .. key
-            return "g@l"
-          end, { expr = true, buffer = bufnr, desc = command.desc })
+      local textobjects = require "treesitter-sexp.textobjects"
+      local motions = require "treesitter-sexp.motions"
+
+      local keymaps = config.options.keymaps
+      if keymaps then
+        for key, lhs in pairs(keymaps.commands) do
+          local command = commands[key]
+          if lhs and command then
+            vim.keymap.set("n", lhs, function()
+              vim.go.operatorfunc = "v:lua.require'treesitter-sexp.commands'." .. key
+              return "g@l"
+            end, { expr = true, buffer = bufnr, desc = command.desc })
+          end
+        end
+        for key, lhs in pairs(keymaps.textobjects) do
+          local textobject = textobjects[key]
+          if lhs and textobject then
+            vim.keymap.set({ "o", "x" }, lhs, function()
+              textobject()
+            end, { desc = textobject.desc, buffer = bufnr, silent = true })
+          end
+        end
+        for key, lhs in pairs(keymaps.motions) do
+          local motion = motions[key]
+          if lhs and motion then
+            vim.keymap.set({ "n", "o", "x" }, lhs, function()
+              motion()
+            end, { desc = motion.desc, buffer = bufnr, silent = true })
+          end
         end
       end
+
       vim.api.nvim_buf_create_user_command(bufnr, "TSSexp", function(info)
-        local command = require("treesitter-sexp.commands")[info.args]
+        local command = commands[info.args]
         if command then
           command()
         end
@@ -37,23 +63,6 @@ function M.setup(opts)
           return vim.tbl_keys(commands)
         end,
       })
-
-      for key, lhs in pairs(config.options.textobjects.keymaps) do
-        local textobject = require("treesitter-sexp.textobjects")[key]
-        if lhs and textobject then
-          vim.keymap.set({ "o", "x" }, lhs, function()
-            textobject()
-          end, { desc = textobject.desc, buffer = bufnr, silent = true })
-        end
-      end
-      for key, lhs in pairs(config.options.motions.keymaps) do
-        local motion = require("treesitter-sexp.motions")[key]
-        if lhs and motion then
-          vim.keymap.set({ "n", "o", "x" }, lhs, function()
-            motion()
-          end, { desc = motion.desc, buffer = bufnr, silent = true })
-        end
-      end
     end,
     group = augroup,
   })
