@@ -144,7 +144,15 @@ end
 ---@type TSSexp.GetRange
 function M.get_head_range(form)
   if form.open then
-    local _, _, end_row, end_col = form.open:range()
+    local next_node = M.get_next_node(form.open)
+    local end_row, end_col
+    if next_node ~= nil then
+      end_row, end_col, _, _ = next_node:range()
+    elseif form.close ~= nil then
+      end_row, end_col, _, _ = form.close:range()
+    else
+      _, _, end_row, end_col = form.open:range()
+    end
     local start_row, start_col, _, _ = form.outer:range()
     return start_row, start_col, end_row, end_col
   else
@@ -156,7 +164,15 @@ end
 ---@type TSSexp.GetRange
 function M.get_tail_range(form)
   if form.close then
-    local start_row, start_col, _, _ = form.close:range()
+    local prev_node = M.get_prev_node(form.close)
+    local start_row, start_col
+    if prev_node ~= nil then
+      _, _, start_row, start_col = prev_node:range()
+    elseif form.open then
+      _, _, start_row, start_col = form.open:range()
+    else
+      start_row, start_col, _, _ = form.close:range()
+    end
     local _, _, end_row, end_col = form.outer:range()
     return start_row, start_col, end_row, end_col
   else
