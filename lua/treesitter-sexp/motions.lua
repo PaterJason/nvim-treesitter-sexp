@@ -7,7 +7,7 @@ local M = {
     get_node = function()
       local form = utils.get_form_node_count()
       if form ~= nil then
-        return form.outer
+        return form.open or form.outer
       end
     end,
     pos = "start",
@@ -17,7 +17,7 @@ local M = {
     get_node = function()
       local form = utils.get_form_node_count()
       if form ~= nil then
-        return form.outer
+        return form.close or form.outer
       end
     end,
     pos = "end",
@@ -25,9 +25,9 @@ local M = {
   prev_elem = {
     desc = "Previous element",
     get_node = function()
-      local node = utils.get_elem().outer
-      if node ~= nil then
-        return utils.get_prev_node(node, vim.v.count1)
+      local form = utils.get_elem()
+      if form ~= nil and form.outer ~= nil then
+        return utils.get_prev_node(form.outer, vim.v.count1)
       end
     end,
     pos = "start",
@@ -35,9 +35,9 @@ local M = {
   next_elem = {
     desc = "Next element",
     get_node = function()
-      local node = utils.get_elem().outer
-      if node ~= nil then
-        return utils.get_next_node(node, vim.v.count1)
+      local form = utils.get_elem()
+      if form ~= nil and form.outer ~= nil then
+        return utils.get_next_node(form.outer, vim.v.count1)
       end
     end,
     pos = "start",
