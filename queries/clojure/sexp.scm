@@ -21,11 +21,11 @@
   (unquoting_lit)
   ] @sexp.outer)
 
-(anon_fn_lit            open: _ @sexp.open . (_)* . close: _ @sexp.close) @sexp.outer
-(list_lit               open: _ @sexp.open . (_)* . close: _ @sexp.close) @sexp.outer
-(map_lit                open: _ @sexp.open . (_)* . close: _ @sexp.close) @sexp.outer
-(ns_map_lit             open: _ @sexp.open . (_)* . close: _ @sexp.close) @sexp.outer
-(read_cond_lit          open: _ @sexp.open . (_)* . close: _ @sexp.close) @sexp.outer
-(set_lit                open: _ @sexp.open . (_)* . close: _ @sexp.close) @sexp.outer
-(splicing_read_cond_lit open: _ @sexp.open . (_)* . close: _ @sexp.close) @sexp.outer
-(vec_lit                open: _ @sexp.open . (_)* . close: _ @sexp.close) @sexp.outer
+(anon_fn_lit            open: _ @sexp.open close: _ @sexp.close) @sexp.outer
+(list_lit               open: _ @sexp.open close: _ @sexp.close) @sexp.outer
+(map_lit                open: _ @sexp.open close: _ @sexp.close) @sexp.outer
+(ns_map_lit             open: _ @sexp.open close: _ @sexp.close) @sexp.outer
+(read_cond_lit          open: _ @sexp.open close: _ @sexp.close) @sexp.outer
+(set_lit                open: _ @sexp.open close: _ @sexp.close) @sexp.outer
+(splicing_read_cond_lit open: _ @sexp.open close: _ @sexp.close) @sexp.outer
+(vec_lit                open: _ @sexp.open close: _ @sexp.close) @sexp.outer
