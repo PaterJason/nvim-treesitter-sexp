@@ -70,7 +70,7 @@ end
 
 ---@type TSSexp.CompForms
 function M.comp_form_ancestor(form1, form2)
-  return vim.treesitter.is_ancestor(form2.outer, form1.outer) and not form1.outer:equal(form2.outer)
+  return vim.treesitter.is_ancestor(form2.outer, form1.outer)
 end
 
 ---@type fun(node: TSNode, count?: integer): TSSexp.Form | nil
@@ -101,59 +101,6 @@ function M.get_parent_form(node, count)
   return forms[count or 1]
 end
 
---- Relies on the ordering outputed by iter_matches
---- The ordering is undocumented behaviour, I hope it doesn't break
----@type fun(n: integer): TSSexp.Form|nil
-function M.get_nth_form(n)
-  local start = vim.fn.getpos "v"
-  local end_ = vim.fn.getpos "."
-
-  local parser = vim.treesitter.get_parser()
-  local root = parser:parse()[1]:root()
-
-  local query = M.get_query()
-  if query == nil then
-    return
-  end
-
-  local result
-  local counter = 0
-  for _, match in query:iter_matches(root, 0, 0, -1) do
-    local is_form = false
-    for id, cnode in pairs(match) do
-      local name = query.captures[id]
-
-      if
-        name == "sexp.outer"
-        and vim.treesitter.is_in_node_range(cnode, start[2] - 1, start[3] - 1)
-        and vim.treesitter.is_in_node_range(cnode, end_[2] - 1, end_[3] - 1)
-      then
-        is_form = true
-      end
-    end
-
-    if is_form then
-      local next_result = {}
-      for id, cnode in pairs(match) do
-        local name = query.captures[id]
-        if name == "sexp.outer" then
-          next_result.outer = cnode
-        elseif name == "sexp.open" then
-          next_result.open = cnode
-        elseif name == "sexp.close" then
-          next_result.close = cnode
-        end
-      end
-      result = next_result
-      if n >= 0 and counter == n then
-        return result
-      end
-      counter = counter + 1
-    end
-  end
-  return result
-end
-
 ---@type TSSexp.GetForm
 function M.get_elem()
   local forms = M.get_valid_forms(M.is_in_range, M.comp_form_ancestor)
@@ -181,10 +128,10 @@ end
 ---@type TSSexp.GetFormRange
 function M.get_head_range(form)
   if form.open then
-    local next_form = M.get_next_form(form.open)
+    local next_node = form.open:next_named_sibling()
     local end_row, end_col, _
-    if next_form ~= nil then
-      end_row, end_col, _, _ = next_form.outer:range()
+    if next_node ~= nil then
+      end_row, end_col, _, _ = next_node:range()
     elseif form.close ~= nil then
       end_row, end_col, _, _ = form.close:range()
     else
@@ -201,10 +148,10 @@ end
 ---@type TSSexp.GetFormRange
 function M.get_tail_range(form)
   if form.close then
-    local prev_form = M.get_prev_form(form.close)
+    local prev_node = form.close:prev_named_sibling()
     local start_row, start_col, _
-    if prev_form ~= nil then
-      _, _, start_row, start_col = prev_form.outer:range()
+    if prev_node ~= nil then
+      _, _, start_row, start_col = prev_node:range()
     elseif form.open then
       _, _, start_row, start_col = form.open:range()
     else
@@ -220,19 +167,20 @@ end
 
 ---@type TSSexp.GetFormRange
 function M.get_i_range(form)
-  local _, _, start_row, start_col = M.get_head_range(form)
-  local end_row, end_col, _, _ = M.get_tail_range(form)
+  local start_row, start_col, end_row, end_col = form.outer:range()
+  local _
+  if form.open then
+    _, _, start_row, start_col = form.open:range()
+  end
+  if form.close then
+    end_row, end_col, _, _ = form.close:range()
+  end
   return start_row, start_col, end_row, end_col
 end
 
 ---@type TSSexp.GetFormRange
 function M.get_a_range(form)
   local start_row, start_col, end_row, end_col = form.outer:range()
-  local last_line = vim.fn.line "$"
-  if end_row >= last_line then
-    end_row = last_line - 1
-    end_col = vim.fn.col { last_line, "$" } - 1
-  end
   return start_row, start_col, end_row, end_col
 end
 
