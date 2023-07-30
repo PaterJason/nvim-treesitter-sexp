@@ -15,12 +15,12 @@ local M = {
   },
   inner_form = {
     desc = "Inner form",
-    get_form = utils.get_form_node_count,
+    get_form = utils.get_form_count,
     get_range = utils.get_i_range,
   },
   outer_form = {
     desc = "Outer form",
-    get_form = utils.get_form_node_count,
+    get_form = utils.get_form_count,
     get_range = utils.get_a_range,
   },
   inner_top_level = {

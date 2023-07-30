@@ -1,83 +1,87 @@
 local utils = require "treesitter-sexp.utils"
 
+---@type TSSexp.GetFormPos
+local function get_outer(form)
+  local row, col, _, _ = form.outer:range()
+  return row, col
+end
+
+---@type TSSexp.GetFormPos
+local function get_open(form)
+  local row, col, _, _ = form.open:range()
+  return row, col
+end
+
+---@type TSSexp.GetFormPos
+local function get_close(form)
+  local row, col, _, _ = form.close:range()
+  return row, col
+end
+
 ---@type table<string, TSSexp.Motion>
 local M = {
   form_start = {
     desc = "Form start",
-    get_node = function()
-      local form = utils.get_form_node_count()
-      if form ~= nil then
-        return form.open or form.outer
-      end
-    end,
-    pos = "start",
+    get_form = utils.get_form_count,
+    get_pos = get_open,
   },
   form_end = {
     desc = "Form end",
-    get_node = function()
-      local form = utils.get_form_node_count()
-      if form ~= nil then
-        return form.close or form.outer
-      end
-    end,
-    pos = "end",
+    get_form = utils.get_form_count,
+    get_pos = get_close,
   },
   prev_elem = {
     desc = "Previous element",
-    get_node = function()
+    get_form = function()
       local form = utils.get_elem()
-      if form ~= nil and form.outer ~= nil then
-        return utils.get_prev_node(form.outer, vim.v.count1)
+      if form ~= nil then
+        return utils.get_prev_form(form.outer, vim.v.count1)
       end
     end,
-    pos = "start",
+    get_pos = get_outer,
   },
   next_elem = {
     desc = "Next element",
-    get_node = function()
+    get_form = function()
       local form = utils.get_elem()
-      if form ~= nil and form.outer ~= nil then
-        return utils.get_next_node(form.outer, vim.v.count1)
+      if form ~= nil then
+        return utils.get_next_form(form.outer, vim.v.count1)
       end
     end,
-    pos = "start",
+    get_pos = get_outer,
   },
   prev_top_level = {
     desc = "Previous top level form",
-    get_node = function()
-      local node = utils.get_top_level_form().outer
-      if node ~= nil then
-        return utils.get_prev_node(node, vim.v.count1)
+    get_form = function()
+      local form = utils.get_top_level_form()
+      if form ~= nil then
+        return utils.get_prev_form(form.outer, vim.v.count1)
       end
     end,
-    pos = "start",
+    get_pos = get_outer,
   },
   next_top_level = {
     desc = "Next top level form",
-    get_node = function()
-      local node = utils.get_top_level_form().outer
-      if node ~= nil then
-        return utils.get_next_node(node, vim.v.count1)
+    get_form = function()
+      local form = utils.get_top_level_form()
+      if form ~= nil then
+        return utils.get_next_form(form.outer, vim.v.count1)
       end
     end,
-    pos = "start",
+    get_pos = get_outer,
   },
 }
 
 local metatable = {
   ---@param self TSSexp.Motion
   __call = function(self)
-    local node = self.get_node()
-    if node == nil then
+    local form = self.get_form()
+    if form == nil then
       vim.notify "Node not found"
       return
     end
-    local start_row, start_col, end_row, end_col = node:range()
-    if self.pos == "end" then
-      vim.api.nvim_win_set_cursor(0, { end_row + 1, end_col - 1 })
-    else
-      vim.api.nvim_win_set_cursor(0, { start_row + 1, start_col })
-    end
+    local row, col = self.get_pos(form)
+    vim.api.nvim_win_set_cursor(0, { row + 1, col })
   end,
 }
 

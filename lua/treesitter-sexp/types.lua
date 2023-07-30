@@ -10,7 +10,14 @@
 --- Get form around cursor
 ---@alias TSSexp.GetForm fun(): TSSexp.Form|nil
 --- Get range from form
----@alias TSSexp.GetRange fun(node: TSSexp.Form): integer, integer, integer, integer
+---@alias TSSexp.GetFormRange fun(node: TSSexp.Form): integer, integer, integer, integer
+--- Get position from form
+---@alias TSSexp.GetFormPos fun(node: TSSexp.Form): integer, integer
+
+--- Node predicate
+---@alias TSSexp.PredForm fun(form1: TSSexp.Form): boolean
+--- Compare forms
+---@alias TSSexp.CompForms fun(form1: TSSexp.Form, form2: TSSexp.Form): boolean
 
 --- Action to apply to treesitter node
 ---@alias TSSexp.Action fun(form: TSSexp.Form): nil
@@ -24,13 +31,13 @@
 ---@class TSSexp.Textobject
 ---@field desc string Description
 ---@field get_form TSSexp.GetForm
----@field get_range TSSexp.GetRange
+---@field get_range TSSexp.GetFormRange
 ---@overload fun(): nil
 
 ---@class TSSexp.Motion
 ---@field desc string Description
----@field get_node TSSexp.GetNode
----@field pos "start"|"end" Move cursor to start or end of node
+---@field get_form TSSexp.GetForm
+---@field get_pos TSSexp.GetFormPos
 ---@overload fun(): nil
 
 --- Configuration table

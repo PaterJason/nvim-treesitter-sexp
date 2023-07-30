@@ -5,27 +5,24 @@ local ts_utils = require "nvim-treesitter.ts_utils"
 local M = {}
 
 function M.swap_next(form)
-  local node = form.outer
-  local next_node = utils.get_next_node(node, vim.v.count1)
-  if next_node ~= nil then
-    ts_utils.swap_nodes(node, next_node, 0, true)
+  local next_form = utils.get_next_form(form.outer, vim.v.count1)
+  if next_form ~= nil then
+    ts_utils.swap_nodes(form.outer, next_form.outer, 0, true)
   end
 end
 
 function M.swap_prev(form)
-  local node = form.outer
-  local prev_node = utils.get_prev_node(node, vim.v.count1)
-  if prev_node ~= nil then
-    ts_utils.swap_nodes(node, prev_node, 0, true)
+  local prev_form = utils.get_prev_form(form.outer, vim.v.count1)
+  if prev_form ~= nil then
+    ts_utils.swap_nodes(form.outer, prev_form.outer, 0, true)
   end
 end
 
 function M.promote(form)
-  local node = form.outer
-  local parent_node = utils.get_parent_node(node, vim.v.count1)
-  if parent_node ~= nil then
-    local text = vim.treesitter.get_node_text(node, 0)
-    local start_row, start_col, end_row, end_col = parent_node:range()
+  local parent_form = utils.get_parent_form(form.outer, vim.v.count1)
+  if parent_form ~= nil then
+    local text = vim.treesitter.get_node_text(form.outer, 0)
+    local start_row, start_col, end_row, end_col = parent_form.outer:range()
 
     vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, vim.split(text, "\n"))
     vim.api.nvim_win_set_cursor(0, { start_row + 1, start_col })
@@ -43,10 +40,10 @@ end
 
 function M.slurp_left(form)
   local node = form.outer
-  local target_node = utils.get_prev_node(node, vim.v.count1)
-  if target_node ~= nil then
+  local target_form = utils.get_prev_form(node, vim.v.count1)
+  if target_form ~= nil then
     local start_range = { utils.get_head_range(form) }
-    local target_range = { target_node:range() }
+    local target_range = { target_form.outer:range() }
 
     ts_utils.swap_nodes(start_range, { target_range[1], target_range[2], target_range[1], target_range[2] }, 0, true)
   end
@@ -54,10 +51,10 @@ end
 
 function M.slurp_right(form)
   local node = form.outer
-  local target_node = utils.get_next_node(node, vim.v.count1)
-  if target_node ~= nil then
+  local target_form = utils.get_next_form(node, vim.v.count1)
+  if target_form ~= nil then
     local end_range = { utils.get_tail_range(form) }
-    local target_range = { target_node:range() }
+    local target_range = { target_form.outer:range() }
 
     ts_utils.swap_nodes(end_range, { target_range[3], target_range[4], target_range[3], target_range[4] }, 0, true)
   end
@@ -70,16 +67,16 @@ function M.barf_left(form)
     return
   end
 
-  local first_node = utils.get_next_node(open_node)
-  if first_node == nil then
-    vim.notify "No valid child node"
+  local first_form = utils.get_next_form(open_node)
+  if first_form == nil then
+    vim.notify "No valid child"
     return
   end
 
-  local target_node = utils.get_next_node(first_node, vim.v.count1)
+  local target_form = utils.get_next_form(first_form.outer, vim.v.count1)
   local start_range = { utils.get_head_range(form) }
-  if target_node ~= nil then
-    local target_range = { target_node:range() }
+  if target_form ~= nil then
+    local target_range = { target_form.outer:range() }
     ts_utils.swap_nodes(start_range, { target_range[1], target_range[2], target_range[1], target_range[2] }, 0, true)
   else
     local close_node = form.close
@@ -100,16 +97,16 @@ function M.barf_right(form)
     return
   end
 
-  local last_node = utils.get_prev_node(close_node)
-  if last_node == nil then
-    vim.notify "No valid child node"
+  local last_form = utils.get_prev_form(close_node)
+  if last_form == nil then
+    vim.notify "No valid child"
     return
   end
 
-  local target_node = utils.get_prev_node(last_node, vim.v.count1)
+  local target_form = utils.get_prev_form(last_form.outer, vim.v.count1)
   local end_range = { utils.get_tail_range(form) }
-  if target_node ~= nil then
-    local target_range = { target_node:range() }
+  if target_form ~= nil then
+    local target_range = { target_form.outer:range() }
     ts_utils.swap_nodes(end_range, { target_range[3], target_range[4], target_range[3], target_range[4] }, 0, true)
   else
     local open_node = form.open
