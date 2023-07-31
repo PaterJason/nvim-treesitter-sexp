@@ -15,7 +15,7 @@ function M.setup(opts)
       local config = require "treesitter-sexp.config"
 
       local query = utils.get_query(filetype)
-      if query == nil or vim.tbl_isempty(config.options) then
+      if query == nil then
         return
       end
 

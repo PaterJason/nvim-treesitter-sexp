@@ -7,8 +7,17 @@
   (nil_lit)
   (bool_lit)
   (sym_lit)
+  ; basic collection-ish
+  (list_lit)
+  (map_lit)
+  (vec_lit)
   ; dispatch reader macros
+  (set_lit)
+  (anon_fn_lit)
   (regex_lit)
+  (read_cond_lit)
+  (splicing_read_cond_lit)
+  (ns_map_lit)
   (var_quoting_lit)
   (sym_val_lit)
   (evaling_lit)
@@ -19,13 +28,13 @@
   (syn_quoting_lit)
   (unquote_splicing_lit)
   (unquoting_lit)
-  ] @sexp.outer)
+  ] @sexp.elem)
 
-(anon_fn_lit            open: _ @sexp.open close: _ @sexp.close) @sexp.outer
-(list_lit               open: _ @sexp.open close: _ @sexp.close) @sexp.outer
-(map_lit                open: _ @sexp.open close: _ @sexp.close) @sexp.outer
-(ns_map_lit             open: _ @sexp.open close: _ @sexp.close) @sexp.outer
-(read_cond_lit          open: _ @sexp.open close: _ @sexp.close) @sexp.outer
-(set_lit                open: _ @sexp.open close: _ @sexp.close) @sexp.outer
-(splicing_read_cond_lit open: _ @sexp.open close: _ @sexp.close) @sexp.outer
-(vec_lit                open: _ @sexp.open close: _ @sexp.close) @sexp.outer
+(anon_fn_lit            open: _ @sexp.open close: _ @sexp.close) @sexp.form
+(list_lit               open: _ @sexp.open close: _ @sexp.close) @sexp.form
+(map_lit                open: _ @sexp.open close: _ @sexp.close) @sexp.form
+(ns_map_lit             open: _ @sexp.open close: _ @sexp.close) @sexp.form
+(read_cond_lit          open: _ @sexp.open close: _ @sexp.close) @sexp.form
+(set_lit                open: _ @sexp.open close: _ @sexp.close) @sexp.form
+(splicing_read_cond_lit open: _ @sexp.open close: _ @sexp.close) @sexp.form
+(vec_lit                open: _ @sexp.open close: _ @sexp.close) @sexp.form

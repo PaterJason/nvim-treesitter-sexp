@@ -5,39 +5,40 @@
 ---@field open? TSNode
 ---@field close? TSNode
 
---- Get node around cursor
----@alias TSSexp.GetNode fun(): TSNode|nil
---- Get form around cursor
----@alias TSSexp.GetForm fun(): TSSexp.Form|nil
---- Get range from form
----@alias TSSexp.GetFormRange fun(node: TSSexp.Form): integer, integer, integer, integer
---- Get position from form
----@alias TSSexp.GetFormPos fun(node: TSSexp.Form): integer, integer
+---@alias TSSexp.Capture
+---| "sexp.elem"
+---| "sexp.form"
+---| "sexp.open"
+---| "sexp.close"
 
---- Node predicate
+--- Get range from element
+---@alias TSSexp.GetElemRange fun(elem: TSNode): integer, integer, integer, integer
+--- Get range from form
+---@alias TSSexp.GetFormRange fun(form: TSSexp.Form): integer, integer, integer, integer
+
+--- Element predicate
+---@alias TSSexp.PredElem fun(node: TSNode): boolean
+--- Compare Elements
+---@alias TSSexp.CompElem fun(node1: TSNode, node2: TSNode): boolean
+
+--- Form predicate
 ---@alias TSSexp.PredForm fun(form1: TSSexp.Form): boolean
 --- Compare forms
 ---@alias TSSexp.CompForms fun(form1: TSSexp.Form, form2: TSSexp.Form): boolean
 
---- Action to apply to treesitter node
----@alias TSSexp.Action fun(form: TSSexp.Form): nil
-
 ---@class TSSexp.Command
 ---@field desc string Description
----@field action TSSexp.Action
----@field get_form TSSexp.GetForm
+---@field call fun(): nil
 ---@overload fun(): nil
 
 ---@class TSSexp.Textobject
 ---@field desc string Description
----@field get_form TSSexp.GetForm
----@field get_range TSSexp.GetFormRange
+---@field get_range fun(): integer[]|nil
 ---@overload fun(): nil
 
 ---@class TSSexp.Motion
 ---@field desc string Description
----@field get_form TSSexp.GetForm
----@field get_pos TSSexp.GetFormPos
+---@field get_pos fun(): integer[]|nil
 ---@overload fun(): nil
 
 --- Configuration table
