@@ -30,8 +30,8 @@ function M.setup(opts)
           if lhs and command then
             vim.keymap.set("n", lhs, function()
               vim.go.operatorfunc = "v:lua.require'treesitter-sexp.commands'." .. key
-              return "g@l"
-            end, { expr = true, buffer = bufnr, desc = command.desc })
+              vim.api.nvim_feedkeys("g@l", "n", false)
+            end, { buffer = bufnr, desc = command.desc })
           end
         end
         for key, lhs in pairs(keymaps.textobjects) do

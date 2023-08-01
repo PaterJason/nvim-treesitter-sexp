@@ -7,7 +7,7 @@ function M.get_query(filetype)
   return vim.treesitter.query.get(lang, "sexp")
 end
 
----@type fun(pred: TSSexp.PredElem, capture_names: string[], comp: TSSexp.CompElem): TSNode[]
+---@type fun(pred: TSSexp.PredNode, capture_names: string[], comp: TSSexp.CompNode): TSNode[]
 function M.get_valid_nodes(pred, capture_names, comp)
   local parser = vim.treesitter.get_parser()
   local root = parser:parse()[1]:root()
@@ -17,16 +17,20 @@ function M.get_valid_nodes(pred, capture_names, comp)
     return {}
   end
 
-  local elems = {}
+  local nodes = {}
   for id, cnode in query:iter_captures(root, 0, 0, -1) do
     local name = query.captures[id]
-    if vim.tbl_contains(capture_names, name) and pred(cnode) then
-      elems[#elems + 1] = cnode
+    if
+      vim.tbl_contains(capture_names, name)
+      and (vim.tbl_isempty(nodes) or not cnode:equal(nodes[#nodes]))
+      and pred(cnode)
+    then
+      nodes[#nodes + 1] = cnode
     end
   end
-  table.sort(elems, comp)
+  table.sort(nodes, comp)
 
-  return elems
+  return nodes
 end
 
 ---@type fun(pred: TSSexp.PredForm, comp: TSSexp.CompForms): TSSexp.Form[]
@@ -52,7 +56,11 @@ function M.get_valid_forms(pred, comp)
         result.close = cnode
       end
     end
-    if result.outer ~= nil and pred(result) then
+    if
+      result.outer ~= nil
+      and (vim.tbl_isempty(forms) or not result.outer:equal(forms[#forms].outer))
+      and pred(result)
+    then
       forms[#forms + 1] = result
     end
   end
@@ -61,15 +69,15 @@ function M.get_valid_forms(pred, comp)
   return forms
 end
 
----@type TSSexp.PredElem
-function M.is_in_elem_range(elem)
+---@type TSSexp.PredNode
+function M.is_in_node_range(node)
   local pos = vim.fn.getpos "."
-  return vim.treesitter.is_in_node_range(elem, pos[2] - 1, pos[3] - 1)
+  return vim.treesitter.is_in_node_range(node, pos[2] - 1, pos[3] - 1)
 end
 
 ---@type TSSexp.PredForm
 function M.is_in_form_range(form)
-  return M.is_in_elem_range(form.outer)
+  return M.is_in_node_range(form.outer)
 end
 
 ---@type fun(node1: TSNode, node2: TSNode): boolean
@@ -79,8 +87,8 @@ function M.comp_node_start_range(node1, node2)
   return row1 < row2 or (row1 == row2 and col1 < col2)
 end
 
----@type TSSexp.CompElem
-function M.comp_elem_ancestor(node1, node2)
+---@type TSSexp.CompNode
+function M.comp_node_ancestor(node1, node2)
   return vim.treesitter.is_ancestor(node2, node1)
 end
 
@@ -92,36 +100,44 @@ end
 ---@type fun(node: TSNode, capture_names: TSSexp.Capture[], count?: integer): TSNode | nil
 function M.get_next(node, capture_names, count)
   local parent = node:parent()
-  local elems = M.get_valid_nodes(function(pred_elem)
-    return parent:equal(pred_elem:parent()) and M.comp_node_start_range(node, pred_elem)
+  local nodes = M.get_valid_nodes(function(pred_node)
+    return parent:equal(pred_node:parent()) and M.comp_node_start_range(node, pred_node)
   end, capture_names, M.comp_node_start_range)
-  return elems[count or 1]
+  return nodes[count or 1] or nodes[#nodes]
 end
 
 ---@type fun(node: TSNode, capture_names: TSSexp.Capture[], count?: integer): TSNode | nil
 function M.get_prev(node, capture_names, count)
   local parent = node:parent()
-  local elem = M.get_valid_nodes(
-    function(pred_elem)
-      return parent:equal(pred_elem:parent()) and M.comp_node_start_range(pred_elem, node)
+  local nodes = M.get_valid_nodes(
+    function(pred_node)
+      return parent:equal(pred_node:parent()) and M.comp_node_start_range(pred_node, node)
     end,
     capture_names,
-    function(elem1, elem2)
-      return M.comp_node_start_range(elem2, elem1)
+    function(node1, node2)
+      return M.comp_node_start_range(node2, node1)
     end
   )
-  return elem[count or 1]
+  return nodes[count or 1] or nodes[#nodes]
 end
 
 ---@type fun(): TSNode|nil
 function M.get_elem()
-  local elems = M.get_valid_nodes(M.is_in_elem_range, { "sexp.elem" }, M.comp_elem_ancestor)
+  local elems = M.get_valid_nodes(M.is_in_node_range, { "sexp.elem" }, M.comp_node_ancestor)
   return elems[1]
 end
 
 ---@type fun(): TSSexp.Form|nil
 function M.get_form()
   local forms = M.get_valid_forms(M.is_in_form_range, M.comp_form_ancestor)
+  return forms[1]
+end
+
+---@type fun(TSNode): TSSexp.Form|nil
+function M.get_parent_form(node)
+  local forms = M.get_valid_forms(function(form)
+    return vim.treesitter.is_ancestor(form.outer, node) and not node:equal(form.outer)
+  end, M.comp_form_ancestor)
   return forms[1]
 end
 
@@ -171,19 +187,19 @@ function M.get_tail_range(form)
   end
 end
 
----@type TSSexp.GetElemRange
+---@type TSSexp.GetNodeRange
 function M.get_a_elem_range(elem)
   local start_row, start_col, end_row, end_col = elem:range()
-  local next_elem = M.get_next(elem, { "sexp.elem", "sexp.close" })
+  local next_node = M.get_next(elem, { "sexp.elem", "sexp.close" })
   local next_row, next_col = end_row, end_col
   local _
-  if next_elem ~= nil then
-    end_row, end_col, _, _ = next_elem:range()
+  if next_node ~= nil then
+    end_row, end_col, _, _ = next_node:range()
   end
   if end_row == next_row and end_col == next_col then
-    local prev_elem = M.get_prev(elem, { "sexp.elem", "sexp.open" })
-    if prev_elem ~= nil then
-      _, _, start_row, start_col = prev_elem:range()
+    local prev_node = M.get_prev(elem, { "sexp.elem", "sexp.open" })
+    if prev_node ~= nil then
+      _, _, start_row, start_col = prev_node:range()
     end
   end
   return start_row, start_col, end_row, end_col

@@ -55,7 +55,7 @@ local M = {
     desc = "Promote element",
     call = function()
       local elem = utils.get_elem()
-      local form = utils.get_form()
+      local form = utils.get_parent_form(elem)
 
       if elem ~= nil and form ~= nil then
         local text = vim.treesitter.get_node_text(elem, 0)

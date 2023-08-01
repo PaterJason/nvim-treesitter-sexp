@@ -11,15 +11,15 @@
 ---| "sexp.open"
 ---| "sexp.close"
 
---- Get range from element
----@alias TSSexp.GetElemRange fun(elem: TSNode): integer, integer, integer, integer
+--- Get range from node
+---@alias TSSexp.GetNodeRange fun(elem: TSNode): integer, integer, integer, integer
 --- Get range from form
 ---@alias TSSexp.GetFormRange fun(form: TSSexp.Form): integer, integer, integer, integer
 
---- Element predicate
----@alias TSSexp.PredElem fun(node: TSNode): boolean
---- Compare Elements
----@alias TSSexp.CompElem fun(node1: TSNode, node2: TSNode): boolean
+--- Node predicate
+---@alias TSSexp.PredNode fun(node: TSNode): boolean
+--- Compare nodes
+---@alias TSSexp.CompNode fun(node1: TSNode, node2: TSNode): boolean
 
 --- Form predicate
 ---@alias TSSexp.PredForm fun(form1: TSSexp.Form): boolean
@@ -28,7 +28,7 @@
 
 ---@class TSSexp.Command
 ---@field desc string Description
----@field call fun(): nil
+---@field call fun(): nil Callback
 ---@overload fun(): nil
 
 ---@class TSSexp.Textobject
