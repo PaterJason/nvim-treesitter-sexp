@@ -58,6 +58,7 @@ function M.setup(opts)
           command()
         end
       end, {
+        desc = "Run treesitter sexp command",
         nargs = 1,
         complete = function()
           return vim.tbl_keys(commands)
