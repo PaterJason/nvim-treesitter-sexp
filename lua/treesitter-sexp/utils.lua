@@ -127,9 +127,14 @@ function M.get_elem()
   return elems[1]
 end
 
+---@type fun(): TSSexp.Form[]
+function M.get_forms()
+  return M.get_valid_forms(M.is_in_form_range, M.comp_form_ancestor)
+end
+
 ---@type fun(): TSSexp.Form|nil
 function M.get_form()
-  local forms = M.get_valid_forms(M.is_in_form_range, M.comp_form_ancestor)
+  local forms = M.get_forms()
   return forms[1]
 end
 
@@ -143,7 +148,7 @@ end
 
 ---@type fun(): TSSexp.Form|nil
 function M.get_top_level_form()
-  local forms = M.get_valid_forms(M.is_in_form_range, M.comp_form_ancestor)
+  local forms = M.get_forms()
   return forms[#forms]
 end
 

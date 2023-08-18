@@ -5,20 +5,36 @@ local M = {
   form_start = {
     desc = "Form start",
     get_pos = function()
-      local form = utils.get_form()
-      if form ~= nil then
-        local row, col, _, _ = (form.open or form.outer):range()
-        return { row, col }
+      local n = vim.v.count1
+      local forms = utils.get_forms()
+      if forms[1] ~= nil then
+        local cursor_pos = vim.api.nvim_win_get_cursor(0)
+        local row1, col1, _, _ = (forms[1].open or forms[1].outer):range()
+        if row1 == cursor_pos[1] - 1 and col1 == cursor_pos[2] and forms[n + 1] ~= nil then
+          local row, col, _, _ = (forms[n + 1].open or forms[n + 1].outer):range()
+          return { row, col }
+        elseif forms[n] ~= nil then
+          local row, col, _, _ = (forms[n].open or forms[n].outer):range()
+          return { row, col }
+        end
       end
     end,
   },
   form_end = {
     desc = "Form end",
     get_pos = function()
-      local form = utils.get_form()
-      if form ~= nil then
-        local _, _, row, col = (form.close or form.outer):range()
-        return { row, col - 1 }
+      local n = vim.v.count1
+      local forms = utils.get_forms()
+      if forms[1] ~= nil then
+        local cursor_pos = vim.api.nvim_win_get_cursor(0)
+        local _, _, row1, col1 = (forms[1].close or forms[1].outer):range()
+        if row1 == cursor_pos[1] - 1 and col1 - 1 == cursor_pos[2] and forms[n + 1] ~= nil then
+          local _, _, row, col = (forms[n + 1].close or forms[n + 1].outer):range()
+          return { row, col - 1 }
+        elseif forms[n] ~= nil then
+          local _, _, row, col = (forms[n].close or forms[n].outer):range()
+          return { row, col - 1 }
+        end
       end
     end,
   },

@@ -69,7 +69,7 @@ local M = {
   promote_form = {
     desc = "Promote form",
     call = function()
-      local forms = utils.get_valid_forms(utils.is_in_form_range, utils.comp_form_ancestor)
+      local forms = utils.get_forms()
       local form1 = forms[1]
       local form2 = forms[2]
 
