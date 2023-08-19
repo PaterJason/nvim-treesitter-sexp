@@ -97,6 +97,7 @@ local metatable = {
   __call = function(self)
     local pos = self.get_pos()
     if pos ~= nil then
+      vim.cmd "normal! m'"
       vim.api.nvim_win_set_cursor(0, { pos[1] + 1, pos[2] })
     end
   end,
