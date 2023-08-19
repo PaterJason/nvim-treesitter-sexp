@@ -71,8 +71,8 @@ end
 
 ---@type TSSexp.PredNode
 function M.is_in_node_range(node)
-  local pos = vim.fn.getpos "."
-  return vim.treesitter.is_in_node_range(node, pos[2] - 1, pos[3] - 1)
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+  return vim.treesitter.is_in_node_range(node, cursor_pos[1] - 1, cursor_pos[2])
 end
 
 ---@type TSSexp.PredForm
