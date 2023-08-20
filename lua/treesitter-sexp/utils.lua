@@ -223,4 +223,18 @@ function M.get_i_form_range(form)
   return start_row, start_col, end_row, end_col
 end
 
+function M.promote(range1, range2)
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+  local replacement = vim.api.nvim_buf_get_text(0, range1[1], range1[2], range1[3], range1[4], {})
+  vim.api.nvim_buf_set_text(0, range2[1], range2[2], range2[3], range2[4], replacement)
+  local row = range2[1] + (cursor_pos[1] - range1[1])
+  local col
+  if row == range2[1] + 1 then
+    col = range2[2] + (cursor_pos[2] - range1[2])
+  else
+    col = cursor_pos[2]
+  end
+  vim.api.nvim_win_set_cursor(0, { row, col })
+end
+
 return M

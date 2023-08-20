@@ -56,13 +56,8 @@ local M = {
     call = function()
       local elem = utils.get_elem()
       local form = utils.get_parent_form(elem)
-
       if elem ~= nil and form ~= nil then
-        local text = vim.treesitter.get_node_text(elem, 0)
-        local start_row, start_col, end_row, end_col = form.outer:range()
-
-        vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, vim.split(text, "\n"))
-        vim.api.nvim_win_set_cursor(0, { start_row + 1, start_col })
+        utils.promote({ elem:range() }, { form.outer:range() })
       end
     end,
   },
@@ -72,13 +67,8 @@ local M = {
       local forms = utils.get_forms()
       local form1 = forms[1]
       local form2 = forms[2]
-
       if form1 ~= nil and form2 ~= nil then
-        local text = vim.treesitter.get_node_text(form1.outer, 0)
-        local start_row, start_col, end_row, end_col = form2.outer:range()
-
-        vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, vim.split(text, "\n"))
-        vim.api.nvim_win_set_cursor(0, { start_row + 1, start_col })
+        utils.promote({ form1.outer:range() }, { form2.outer:range() })
       end
     end,
   },
@@ -87,11 +77,7 @@ local M = {
     call = function()
       local form = utils.get_form()
       if form ~= nil then
-        local inner_range = { utils.get_i_form_range(form) }
-        local outer_range = { form.outer:range() }
-
-        local text = vim.api.nvim_buf_get_text(0, inner_range[1], inner_range[2], inner_range[3], inner_range[4], {})
-        vim.api.nvim_buf_set_text(0, outer_range[1], outer_range[2], outer_range[3], outer_range[4], text)
+        utils.promote({ utils.get_i_form_range(form) }, { form.outer:range() })
       end
     end,
   },
