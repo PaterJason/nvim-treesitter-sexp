@@ -223,18 +223,112 @@ function M.get_i_form_range(form)
   return start_row, start_col, end_row, end_col
 end
 
-function M.promote(range1, range2)
-  local cursor_pos = vim.api.nvim_win_get_cursor(0)
-  local replacement = vim.api.nvim_buf_get_text(0, range1[1], range1[2], range1[3], range1[4], {})
-  vim.api.nvim_buf_set_text(0, range2[1], range2[2], range2[3], range2[4], replacement)
-  local row = range2[1] + (cursor_pos[1] - range1[1])
+---@param pos integer[]
+---@return integer[]
+function M.pos_to_range(pos)
+  return { pos[1], pos[2], pos[1], pos[2] }
+end
+
+---@param range integer[]
+---@return string[]
+local function get_buf_text(range)
+  return vim.api.nvim_buf_get_text(0, range[1], range[2], range[3], range[4], {})
+end
+
+---@param range integer[]
+---@param replacement string[]
+local function set_buf_text(range, replacement)
+  vim.api.nvim_buf_set_text(0, range[1], range[2], range[3], range[4], replacement)
+end
+
+--- Set cursor by range offset by pos
+---@param range integer[]
+---@param target_pos integer[] (0,0) indexed
+---@param pos integer[] (0,1) indexed
+local function set_cursor_basic(range, target_pos, pos)
+  local row = target_pos[1] + (pos[1] - range[1])
   local col
-  if row == range2[1] + 1 then
-    col = range2[2] + (cursor_pos[2] - range1[2])
+  if row == target_pos[1] + 1 then
+    col = target_pos[2] + (pos[2] - range[2])
   else
-    col = cursor_pos[2]
+    col = pos[2]
   end
   vim.api.nvim_win_set_cursor(0, { row, col })
+end
+
+--- Set cursor for range swaps
+---@param range1 integer[]
+---@param range2 integer[]
+---@param pos integer[] (1,0) indexed
+local function set_cursor_swap(range1, range2, pos)
+  local row_delta = 0
+  local col_delta = 0
+
+  local text1 = get_buf_text(range1)
+  local text2 = get_buf_text(range2)
+
+  if range1[3] < range2[1] or (range1[3] == range2[1] and range1[4] < range2[2]) then
+    row_delta = #text2 - #text1
+  end
+
+  if range1[3] == range2[1] and range1[4] <= range2[2] then
+    if row_delta ~= 0 then
+      col_delta = #text2[#text2] - range1[4]
+      if range1[1] == range2[1] + row_delta then
+        col_delta = col_delta + range1[2]
+      end
+    else
+      col_delta = #text2[#text2] - #text1[#text1]
+    end
+  end
+
+  set_cursor_basic(range1, { range2[1] + row_delta, range2[2] + col_delta }, pos)
+end
+
+---@param range1 integer[]
+---@param range2 integer[]
+---@return nil
+function M.promote_range(range1, range2)
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+  local replacement = get_buf_text(range1)
+  set_buf_text(range2, replacement)
+  set_cursor_basic(range1, range2, cursor_pos)
+end
+
+---@param range integer[]
+---@param target_pos integer[] (0,0) indexed
+---@param pos integer[] (1,0) indexed
+---@return nil
+function M.move_range(range, target_pos, pos)
+  local text = get_buf_text(range)
+  local target_range = M.pos_to_range(target_pos)
+  if target_pos[1] < range[1] or (target_pos[1] == range[1] and target_pos[2] < range[2]) then
+    set_buf_text(range, {})
+    set_buf_text(target_range, text)
+  else
+    set_buf_text(target_range, text)
+    set_buf_text(range, {})
+  end
+  set_cursor_swap(range, target_range, pos)
+end
+
+---@param range1 integer[]
+---@param range2 integer[]
+---@return nil
+function M.swap_ranges(range1, range2)
+  local cursor_pos = vim.api.nvim_win_get_cursor(0)
+  local text1 = get_buf_text(range1)
+  local text2 = get_buf_text(range2)
+
+  if range2[1] < range1[1] or (range2[1] == range1[1] and range2[2] < range1[2]) then
+    set_buf_text(range1, text2)
+    set_buf_text(range2, text1)
+  else
+    set_buf_text(range2, text1)
+    set_buf_text(range1, text2)
+  end
+
+  set_cursor_swap(range1, range2, cursor_pos)
 end
 
 return M
