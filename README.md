@@ -7,7 +7,8 @@ particularly useful for editing Lisps and manipulating data structures
 
 ## Requirements
 - Neovim 0.9.1 or later
-- [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
+- [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) with
+the relevant language parsers installed
 
 ## Configuration
 
@@ -61,3 +62,12 @@ The commands can be called using `:TSSexp` with any of the following arguments:
 
 The default mappings are taken from vim-sexp and
 vim-sexp-mappings-for-regular-people. I've avoided any use of the meta key
+
+## Supported languages
+
+For `nvim-treesitter-sexp` to support a language requires a query file. I'm
+open to adding more queries and welcome contributions to support more
+languages.
+
+- `clojure`
+- `fennel`
