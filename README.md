@@ -1,9 +1,13 @@
-# nvim-treesitter-sexp **(WIP)**
+# nvim-treesitter-sexp
 
-A plug-in for [Neovim](https://github.com/neovim/neovim) for editing code by
-manipulating the Tree-sitter AST. Inspired by
-[vim-sexp](https://github.com/guns/vim-sexp). This is particularly useful for
-editing Lisps
+A plugin for [Neovim](https://github.com/neovim/neovim) for editing code by
+manipulating the Treesitter AST. Basically a reimplementation of
+[vim-sexp](https://github.com/guns/vim-sexp) using treesitter queries. This is
+particularly useful for editing Lisps and manipulating data structures
+
+## Requirements
+- Neovim 0.9.1 or later
+- [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
 
 ## Configuration
 
@@ -35,10 +39,10 @@ require("treesitter-sexp").setup {
     },
     textobjects = {
       inner_elem = "ie",
-      inner_form = "if",
-      inner_top_level = "iF",
       outer_elem = "ae",
+      inner_form = "if",
       outer_form = "af",
+      inner_top_level = "iF",
       outer_top_level = "aF",
     },
   },
@@ -47,7 +51,13 @@ require("treesitter-sexp").setup {
 
 ## Commands
 
-`TSSexp`
+The commands can be called using `:TSSexp` with any of the following arguments:
+
+`swap_prev_elem`, `swap_next_elem`, `swap_prev_form`, `swap_next_form`,
+`promote_elem`, `promote_form`, `splice`, `slurp_left`, `slurp_right`,
+`barf_left`, `barf_right`
 
 ## Mappings
 
+The default mappings are taken from vim-sexp and
+vim-sexp-mappings-for-regular-people. I've avoided any use of the meta key

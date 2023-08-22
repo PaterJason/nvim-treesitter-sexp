@@ -24,10 +24,10 @@ local defaults = {
     },
     textobjects = {
       inner_elem = "ie",
-      inner_form = "if",
-      inner_top_level = "iF",
       outer_elem = "ae",
+      inner_form = "if",
       outer_form = "af",
+      inner_top_level = "iF",
       outer_top_level = "aF",
     },
   },
