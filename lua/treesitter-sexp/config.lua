@@ -1,5 +1,7 @@
+local M = {}
+
 ---@type TSSexp.Config
-local defaults = {
+M.defaults = {
   keymaps = {
     commands = {
       swap_prev_elem = "<e",
@@ -33,14 +35,12 @@ local defaults = {
   },
 }
 
-local M = {}
-
 ---@type TSSexp.Config
 M.options = {}
 
 ---@param options? TSSexp.Config
 function M.setup(options)
-  M.options = vim.tbl_deep_extend("force", defaults, options or {})
+  M.options = vim.tbl_deep_extend("force", M.defaults, options or {})
 end
 
 return M
