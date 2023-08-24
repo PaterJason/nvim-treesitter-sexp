@@ -1,12 +1,10 @@
 local utils = require "treesitter-sexp.utils"
 
+local augroup = vim.api.nvim_create_augroup("NvimTreesitter-sexp", {})
+
 local M = {}
 
----@param opts? TSSexp.Config
-function M.setup(opts)
-  require("treesitter-sexp.config").setup(opts)
-
-  local augroup = vim.api.nvim_create_augroup("NvimTreesitter-sexp", {})
+function M.init()
   vim.api.nvim_create_autocmd("FileType", {
     callback = function(args)
       local bufnr = args.buf
@@ -67,6 +65,11 @@ function M.setup(opts)
     end,
     group = augroup,
   })
+end
+
+---@param opts? TSSexp.Config
+function M.setup(opts)
+  require("treesitter-sexp.config").setup(opts)
 end
 
 return M

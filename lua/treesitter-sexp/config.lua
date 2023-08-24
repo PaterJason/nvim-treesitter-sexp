@@ -36,7 +36,7 @@ M.defaults = {
 }
 
 ---@type TSSexp.Config
-M.options = {}
+M.options = M.defaults
 
 ---@param options? TSSexp.Config
 function M.setup(options)
