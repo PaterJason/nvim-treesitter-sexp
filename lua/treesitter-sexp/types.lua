@@ -43,10 +43,11 @@
 
 --- Configuration table
 ---@class TSSexp.Config
---- Key mappings, set entry to disable
+---@field enabled? boolean
+--- Keymap types, set to false to disable all keymaps
 ---@field keymaps? TSSexp.Keymaps|false
 
---- Key mappings, set entry to false to disable
+--- Key mappings, set entry to false to disable keymap type
 ---@alias TSSexp.Keymaps.Keys table<string, string|false>
 
 ---@class TSSexp.Keymaps

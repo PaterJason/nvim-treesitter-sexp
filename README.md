@@ -16,6 +16,7 @@ the relevant language parsers installed
 
 ```lua
 require("treesitter-sexp").setup {
+  enabled = true,
   keymaps = {
     commands = {
       swap_prev_elem = "<e",

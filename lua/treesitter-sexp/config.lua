@@ -2,6 +2,7 @@ local M = {}
 
 ---@type TSSexp.Config
 M.defaults = {
+  enabled = true,
   keymaps = {
     commands = {
       swap_prev_elem = "<e",

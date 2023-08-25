@@ -12,6 +12,10 @@ function M.init()
 
       local config = require "treesitter-sexp.config"
 
+      if not config.options.enabled then
+        return
+      end
+
       local query = utils.get_query(filetype)
       if query == nil then
         return
