@@ -1,3 +1,5 @@
+local config = require "treesitter-sexp.config"
+
 local M = {}
 
 ---@type fun(filetype?: string): Query|nil
@@ -246,6 +248,9 @@ end
 ---@param target_pos integer[] (0,0) indexed
 ---@param pos integer[] (0,1) indexed
 local function set_cursor_basic(range, target_pos, pos)
+  if not config.options.set_cursor then
+    return
+  end
   local row = target_pos[1] + (pos[1] - range[1])
   local col
   if row == target_pos[1] + 1 then
@@ -261,6 +266,9 @@ end
 ---@param range2 integer[]
 ---@param pos integer[] (1,0) indexed
 local function set_cursor_swap(range1, range2, pos)
+  if not config.options.set_cursor then
+    return
+  end
   local row_delta = 0
   local col_delta = 0
 

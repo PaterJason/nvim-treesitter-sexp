@@ -3,6 +3,7 @@ local M = {}
 ---@type TSSexp.Config
 M.defaults = {
   enabled = true,
+  set_cursor = true,
   keymaps = {
     commands = {
       swap_prev_elem = "<e",

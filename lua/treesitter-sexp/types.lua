@@ -44,6 +44,7 @@
 --- Configuration table
 ---@class TSSexp.Config
 ---@field enabled? boolean
+---@field set_cursor? boolean
 --- Keymap types, set to false to disable all keymaps
 ---@field keymaps? TSSexp.Keymaps|false
 
