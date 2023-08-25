@@ -12,11 +12,15 @@ the relevant language parsers installed
 
 ## Configuration
 
-(Default values are shown below)
+Calling setup is not required to use nvim-treesitter-sexp, it is only needed
+for configuration
+
+Example with default config values:
 
 ```lua
 require("treesitter-sexp").setup {
   enabled = true,
+  set_cursor = true,
   keymaps = {
     commands = {
       swap_prev_elem = "<e",
