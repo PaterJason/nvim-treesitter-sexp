@@ -1,0 +1,1 @@
+require("treesitter-sexp").init()
