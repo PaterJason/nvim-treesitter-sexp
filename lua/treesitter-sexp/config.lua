@@ -38,11 +38,11 @@ M.defaults = {
 }
 
 ---@type TSSexp.Config
-M.options = M.defaults
+M.options = vim.deepcopy(M.defaults)
 
 ---@param options? TSSexp.Config
 function M.setup(options)
-  M.options = vim.tbl_deep_extend("force", M.defaults, options or {})
+  M.options = vim.tbl_deep_extend("force", vim.deepcopy(M.defaults), options or {})
 end
 
 return M
