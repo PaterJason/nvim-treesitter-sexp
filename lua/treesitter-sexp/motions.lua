@@ -64,6 +64,32 @@ local M = {
       end
     end,
   },
+  prev_elem_end = {
+    desc = "Previous element end",
+    get_pos = function()
+      local elem = utils.get_elem()
+      if elem ~= nil then
+        local node = utils.get_prev(elem, { "sexp.elem" }, vim.v.count1)
+        if node ~= nil then
+          local _, _, row, col = node:range()
+          return { row, col - 1 }
+        end
+      end
+    end,
+  },
+  next_elem_end = {
+    desc = "Next element end",
+    get_pos = function()
+      local elem = utils.get_elem()
+      if elem ~= nil then
+        local node = utils.get_next(elem, { "sexp.elem" }, vim.v.count1)
+        if node ~= nil then
+          local _, _, row, col = node:range()
+          return { row, col - 1 }
+        end
+      end
+    end,
+  },
   prev_top_level = {
     desc = "Previous top level form",
     get_pos = function()
