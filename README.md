@@ -80,3 +80,4 @@ languages.
 
 - `clojure`
 - `fennel`
+- `janet`
