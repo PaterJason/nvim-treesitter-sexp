@@ -152,6 +152,29 @@ local M = {
       end
     end,
   },
+  insert_head = {
+    desc = "Insert cursor at head",
+    call = function()
+      local form = utils.get_form()
+      if form ~= nil then
+        local _, _, row, col = utils.get_head_range(form)
+        vim.api.nvim_win_set_cursor(0, { row + 1, col })
+        vim.api.nvim_buf_set_text(0, row, col, row, col, { " " })
+        vim.cmd.startinsert()
+      end
+    end,
+  },
+  insert_tail = {
+    desc = "Insert cursor at tail",
+    call = function()
+      local form = utils.get_form()
+      if form ~= nil then
+        local row, col, _, _ = utils.get_tail_range(form)
+        vim.api.nvim_win_set_cursor(0, { row + 1, col })
+        vim.cmd.startinsert()
+      end
+    end,
+  },
 }
 
 for _, command in pairs(M) do

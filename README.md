@@ -34,6 +34,8 @@ require("treesitter-sexp").setup {
       slurp_right = ">)",
       barf_left = ">(",
       barf_right = "<)",
+      insert_head = "<I",
+      insert_tail = ">I",
     },
     motions = {
       form_start = "(",
