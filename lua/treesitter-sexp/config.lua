@@ -23,6 +23,8 @@ M.defaults = {
       form_end = ")",
       prev_elem = "[e",
       next_elem = "]e",
+      prev_elem_end = "[E",
+      next_elem_end = "]E",
       prev_top_level = "[[",
       next_top_level = "]]",
     },
