@@ -81,3 +81,4 @@ languages.
 - `clojure`
 - `fennel`
 - `janet`
+- `query` tree-sitter query language
