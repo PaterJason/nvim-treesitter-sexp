@@ -43,7 +43,8 @@
 
 ---@class TSSexp.Motion
 ---@field desc string Description
----@field get_pos fun(): integer[]|nil
+---@field get_candidates fun(): any[]
+---@field get_candidate_pos fun(candidate: any): integer, integer
 ---@overload fun(): nil
 
 --- Configuration table

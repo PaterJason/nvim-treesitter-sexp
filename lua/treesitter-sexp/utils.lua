@@ -115,9 +115,8 @@ end
 
 ---@param node TSNode
 ---@param capture_names TSSexp.Capture[]
----@param count? integer
----@return TSNode|nil
-function M.get_next(node, capture_names, count)
+---@return TSNode[]
+function M.get_next_nodes(node, capture_names)
   local parent = node:parent()
   local nodes = M.get_valid_nodes(
     function(pred_node)
@@ -129,14 +128,22 @@ function M.get_next(node, capture_names, count)
       node = parent,
     }
   )
-  return nodes[count or 1] or nodes[#nodes]
+  return nodes
 end
 
 ---@param node TSNode
 ---@param capture_names TSSexp.Capture[]
 ---@param count? integer
 ---@return TSNode|nil
-function M.get_prev(node, capture_names, count)
+function M.get_next(node, capture_names, count)
+  local nodes = M.get_next_nodes(node, capture_names)
+  return nodes[count or 1] or nodes[#nodes]
+end
+
+---@param node TSNode
+---@param capture_names TSSexp.Capture[]
+---@return TSNode[]
+function M.get_prev_nodes(node, capture_names)
   local parent = node:parent()
   local nodes = M.get_valid_nodes(
     function(pred_node)
@@ -150,6 +157,15 @@ function M.get_prev(node, capture_names, count)
       node = parent,
     }
   )
+  return nodes
+end
+
+---@param node TSNode
+---@param capture_names TSSexp.Capture[]
+---@param count? integer
+---@return TSNode|nil
+function M.get_prev(node, capture_names, count)
+  local nodes = M.get_prev_nodes(node, capture_names)
   return nodes[count or 1] or nodes[#nodes]
 end
 
