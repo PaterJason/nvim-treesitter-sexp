@@ -187,12 +187,12 @@ function M.get_form()
 end
 
 ---@param node TSNode
----@return TSSexp.Form|nil
-function M.get_parent_form(node)
+---@return TSSexp.Form[]
+function M.get_parent_forms(node)
   local forms = M.get_valid_forms(function(form)
     return vim.treesitter.is_ancestor(form.outer, node) and not node:equal(form.outer)
   end, M.comp_form_ancestor)
-  return forms[1]
+  return forms
 end
 
 ---@return TSSexp.Form|nil

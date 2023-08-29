@@ -55,7 +55,8 @@ local M = {
     call = function()
       local elem = utils.get_elem()
       if elem ~= nil then
-        local form = utils.get_parent_form(elem)
+        local forms = utils.get_parent_forms(elem)
+        local form = forms[vim.v.count1] or forms[#forms]
         if form ~= nil then
           utils.promote_range({ elem:range() }, { form.outer:range() })
         end
@@ -66,9 +67,9 @@ local M = {
     desc = "Promote form",
     call = function()
       local forms = utils.get_forms()
-      local form1 = forms[1]
-      local form2 = forms[2]
-      if form1 ~= nil and form2 ~= nil then
+      if #forms >= 2 then
+        local form1 = forms[1]
+        local form2 = forms[vim.v.count1 + 1] or forms[#forms]
         utils.promote_range({ form1.outer:range() }, { form2.outer:range() })
       end
     end,
