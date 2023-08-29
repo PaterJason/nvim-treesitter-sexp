@@ -20,6 +20,11 @@
 ---@alias TSSexp.PredNode fun(node: TSNode): boolean
 --- Compare nodes
 ---@alias TSSexp.CompNode fun(node1: TSNode, node2: TSNode): boolean
+--- Get node function options
+---@class TSSexp.GetNodeOpts
+---@field capture_names? TSSexp.Capture[]
+---@field node? TSNode
+---@field cursor? boolean
 
 --- Form predicate
 ---@alias TSSexp.PredForm fun(form1: TSSexp.Form): boolean

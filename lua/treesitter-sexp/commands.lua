@@ -54,9 +54,11 @@ local M = {
     desc = "Promote element",
     call = function()
       local elem = utils.get_elem()
-      local form = utils.get_parent_form(elem)
-      if elem ~= nil and form ~= nil then
-        utils.promote_range({ elem:range() }, { form.outer:range() })
+      if elem ~= nil then
+        local form = utils.get_parent_form(elem)
+        if form ~= nil then
+          utils.promote_range({ elem:range() }, { form.outer:range() })
+        end
       end
     end,
   },
