@@ -1,21 +1,34 @@
 local utils = require "treesitter-sexp.utils"
 
+local function get_head_pos(node)
+  local row, col, _, _ = node:range()
+  return row, col
+end
+
+local function get_tail_pos(node)
+  local mode = vim.api.nvim_get_mode().mode
+  local _, _, row, col = node:range()
+  if mode == "no" then
+    return row, col
+  else
+    return row, col - 1
+  end
+end
+
 ---@type table<string, TSSexp.Motion>
 local M = {
   form_start = {
     desc = "Form start",
     get_candidates = utils.get_forms,
     get_candidate_pos = function(form)
-      local row, col, _, _ = (form.open or form.outer):range()
-      return row, col
+      return get_head_pos(form.open or form.outer)
     end,
   },
   form_end = {
     desc = "Form end",
     get_candidates = utils.get_forms,
     get_candidate_pos = function(form)
-      local _, _, row, col = (form.close or form.outer):range()
-      return row, col
+      return get_tail_pos(form.close or form.outer)
     end,
   },
   prev_elem = {
@@ -29,10 +42,7 @@ local M = {
         return {}
       end
     end,
-    get_candidate_pos = function(node)
-      local row, col, _, _ = node:range()
-      return row, col
-    end,
+    get_candidate_pos = get_head_pos,
   },
   next_elem = {
     desc = "Next element",
@@ -45,10 +55,7 @@ local M = {
         return {}
       end
     end,
-    get_candidate_pos = function(node)
-      local row, col, _, _ = node:range()
-      return row, col
-    end,
+    get_candidate_pos = get_head_pos,
   },
   prev_elem_end = {
     desc = "Previous element end",
@@ -61,10 +68,7 @@ local M = {
         return {}
       end
     end,
-    get_candidate_pos = function(node)
-      local _, _, row, col = node:range()
-      return row, col - 1
-    end,
+    get_candidate_pos = get_tail_pos,
   },
   next_elem_end = {
     desc = "Next element end",
@@ -77,10 +81,7 @@ local M = {
         return {}
       end
     end,
-    get_candidate_pos = function(node)
-      local _, _, row, col = node:range()
-      return row, col - 1
-    end,
+    get_candidate_pos = get_tail_pos,
   },
   prev_top_level = {
     desc = "Previous top level form",
@@ -93,10 +94,7 @@ local M = {
         return {}
       end
     end,
-    get_candidate_pos = function(node)
-      local row, col, _, _ = node:range()
-      return row, col
-    end,
+    get_candidate_pos = get_head_pos,
   },
   next_top_level = {
     desc = "Next top level form",
@@ -109,10 +107,7 @@ local M = {
         return {}
       end
     end,
-    get_candidate_pos = function(node)
-      local row, col, _, _ = node:range()
-      return row, col
-    end,
+    get_candidate_pos = get_head_pos,
   },
 }
 
