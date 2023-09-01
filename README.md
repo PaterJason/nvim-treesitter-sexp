@@ -19,10 +19,15 @@ Example with default config values:
 
 ```lua
 require("treesitter-sexp").setup {
+  -- Enable/disable
   enabled = true,
+  -- Move cursor when applying commands
   set_cursor = true,
+  -- Set to false to disable all keymaps
   keymaps = {
+    -- Set to false to disable keymap type
     commands = {
+      -- Set to false to disable individual keymaps
       swap_prev_elem = "<e",
       swap_next_elem = ">e",
       swap_prev_form = "<f",
