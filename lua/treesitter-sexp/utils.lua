@@ -7,7 +7,10 @@ local M = {}
 function M.get_query(filetype)
   filetype = filetype or vim.bo.filetype
   local lang = vim.treesitter.language.get_lang(filetype) or ""
-  return vim.treesitter.query.get(lang, "sexp")
+  local _, query = pcall(vim.treesitter.query.get, lang, "sexp")
+  if query then
+    return query
+  end
 end
 
 ---@param pred TSSexp.PredNode
