@@ -25,6 +25,7 @@
 ---@field capture_names? TSSexp.Capture[]
 ---@field node? TSNode
 ---@field cursor? boolean
+---@field max_start_depth? integer
 
 --- Form predicate
 ---@alias TSSexp.PredForm fun(form1: TSSexp.Form): boolean

@@ -34,14 +34,16 @@ function M.get_valid_nodes(pred, comp, capture_names, opts)
   end
 
   local nodes = {}
-  for id, cnode in query:iter_captures(node, 0, start, stop) do
-    local name = query.captures[id]
-    if
-      vim.tbl_contains(capture_names, name)
-      and (vim.tbl_isempty(nodes) or not cnode:equal(nodes[#nodes]))
-      and pred(cnode)
-    then
-      nodes[#nodes + 1] = cnode
+  for _, match in query:iter_matches(node, 0, start, stop, { max_start_depth = opts.max_start_depth }) do
+    for id, cnode in pairs(match) do
+      local name = query.captures[id]
+      if
+        vim.tbl_contains(capture_names, name)
+        and (vim.tbl_isempty(nodes) or not cnode:equal(nodes[#nodes]))
+        and pred(cnode)
+      then
+        nodes[#nodes + 1] = cnode
+      end
     end
   end
   table.sort(nodes, comp)
@@ -129,6 +131,7 @@ function M.get_next_nodes(node, capture_names)
     capture_names,
     {
       node = parent,
+      max_start_depth = 1,
     }
   )
   return nodes
@@ -158,6 +161,7 @@ function M.get_prev_nodes(node, capture_names)
     capture_names,
     {
       node = parent,
+      max_start_depth = 1,
     }
   )
   return nodes
