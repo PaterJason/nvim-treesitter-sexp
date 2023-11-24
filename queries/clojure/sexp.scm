@@ -30,13 +30,18 @@
   (unquoting_lit)
   ] @sexp.elem)
 
-[
- (anon_fn_lit open: _ @sexp.open close: _ @sexp.close)
- (list_lit open: _ @sexp.open close: _ @sexp.close)
- (map_lit open: _ @sexp.open close: _ @sexp.close)
- (ns_map_lit open: _ @sexp.open close: _ @sexp.close)
- (read_cond_lit open: _ @sexp.open close: _ @sexp.close)
- (set_lit open: _ @sexp.open close: _ @sexp.close)
- (splicing_read_cond_lit open: _ @sexp.open close: _ @sexp.close)
- (vec_lit open: _ @sexp.open close: _ @sexp.close)
- ] @sexp.form
+((_ open: _ @sexp.open close: _ @sexp.close) @sexp.form
+ (#not-has-parent? @sexp.form
+  derefing_lit
+  quoting_lit
+  syn_quoting_lit
+  unquote_splicing_lit
+  unquoting_lit))
+
+((_ (_ open: _ @sexp.open close: _ @sexp.close)) @sexp.form
+ (#has-type? @sexp.form
+  derefing_lit
+  quoting_lit
+  syn_quoting_lit
+  unquote_splicing_lit
+  unquoting_lit))
