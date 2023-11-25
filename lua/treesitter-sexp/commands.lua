@@ -161,8 +161,8 @@ local M = {
       local form = utils.get_form()
       if form ~= nil then
         local _, _, row, col = utils.get_head_range(form)
-        vim.api.nvim_win_set_cursor(0, { row + 1, col })
         vim.api.nvim_buf_set_text(0, row, col, row, col, { " " })
+        vim.api.nvim_win_set_cursor(0, { row + 1, col })
         vim.cmd.startinsert()
       end
     end,
