@@ -39,7 +39,7 @@
   unquoting_lit))
 
 ((_ (_ open: _ @sexp.open close: _ @sexp.close)) @sexp.form
- (#has-type? @sexp.form
+ (#kind-eq? @sexp.form
   derefing_lit
   quoting_lit
   syn_quoting_lit
